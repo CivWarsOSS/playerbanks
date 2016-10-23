@@ -1,0 +1,11 @@
+main: no.erik1988.playerbanks.Main
+name: PlayerBanks
+version: 0.1
+author: Erik1988
+description: It allows players to create banks with interest rate to lend out to other players.
+commands:
+  pbank:
+    description: Main command pbank. 
+    permission: pbank.user
+    permission-message: You don't have the pbank.user permission. 
+    aliases: [pbanks]
