@@ -84,8 +84,8 @@ public class Main extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new LoginListener(this), this);
 		}
 		sql.load();
-		int timeofday = config.getInt("interest.timeofday.hour",12);
-
+		int timeofday = config.getInt("interest.timeofday.hour",4);
+		int timeofdaycleanup = config.getInt("cleanup.timeofday.hour",5);
 
 		Schedule.scheduleRepeatAtTime(this, new Runnable() {
 			@Override
@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
 					cleanUp();
 					//st.cleanUpThreaded();
 				}
-			}, timeofday);
+			}, timeofdaycleanup);
 		}
 
 	}
