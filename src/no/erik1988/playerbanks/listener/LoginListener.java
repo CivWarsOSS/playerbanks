@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import no.erik1988.playerbanks.Main;
-import no.erik1988.playerbanks.sql.Database;
 
 public final class LoginListener implements Listener {
 	public LoginListener(Main plugin) {

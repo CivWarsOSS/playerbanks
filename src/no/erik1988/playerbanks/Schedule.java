@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import no.erik1988.playerbanks.Main;
-import no.erik1988.playerbanks.LogHandler;
 
 public class Schedule{
 	private Main plugin;

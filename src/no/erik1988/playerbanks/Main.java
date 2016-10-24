@@ -1,7 +1,6 @@
 package no.erik1988.playerbanks;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -19,7 +18,7 @@ import no.erik1988.playerbanks.sql.SQLite;
 import no.erik1988.playerbanks.commands.Pbank;
 import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
-import no.erik1988.playerbanks.SingleThread;
+//import no.erik1988.playerbanks.SingleThread;
 
 public class Main extends JavaPlugin {
 	FileConfiguration config = getConfig();

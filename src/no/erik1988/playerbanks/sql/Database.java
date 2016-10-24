@@ -7,12 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -20,11 +16,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import net.milkbowl.vault.economy.Economy;
-import no.erik1988.playerbanks.sql.Error; // YOU MUST IMPORT THE CLASS ERROR, AND ERRORS!!!
+import no.erik1988.playerbanks.sql.Error; 
 import no.erik1988.playerbanks.sql.Errors;
-import no.erik1988.playerbanks.LogHandler;
-import no.erik1988.playerbanks.Main; // Import main class!
+import no.erik1988.playerbanks.Main; 
 import no.erik1988.playerbanks.objects.LoanObject;
 
 public abstract class Database {
@@ -383,7 +377,6 @@ public abstract class Database {
                 	int amount = rs.getInt("total");
                 	amount = Math.round(amount * 100);
                 	amount = amount/100;
-                	String amountasstirng = Integer.toString(amount);
                 	String status2 = c.getString("Status.Pending","§ePending");
                 	if (status == 1){
                 		status2 = c.getString("Status.Active","§2Active");
@@ -475,7 +468,6 @@ public abstract class Database {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        FileConfiguration c = plugin.getConfig();
         String myuuid = player.getUniqueId().toString();
         Boolean out = false; 
         try {
@@ -518,7 +510,6 @@ public abstract class Database {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        FileConfiguration c = plugin.getConfig();
         String myuuid = player.getUniqueId().toString();
         Boolean out = false; 
         try {
@@ -560,7 +551,6 @@ public abstract class Database {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        FileConfiguration c = plugin.getConfig();
         String myuuid = player.getUniqueId().toString();
         Boolean out = false; 
         try {
@@ -634,8 +624,7 @@ public abstract class Database {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        FileConfiguration c = plugin.getConfig();
-        String myuuid = player.getUniqueId().toString();
+        //String myuuid = player.getUniqueId().toString();
         Boolean out = false; 
         try {
             conn = getSQLConnection();

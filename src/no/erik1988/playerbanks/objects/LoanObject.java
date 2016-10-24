@@ -1,8 +1,6 @@
 package no.erik1988.playerbanks.objects;
 
-import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -10,10 +8,8 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import net.milkbowl.vault.economy.Economy;
-import no.erik1988.playerbanks.sql.Database;
 import no.erik1988.playerbanks.sql.Errors;
 import no.erik1988.playerbanks.LogHandler;
 import no.erik1988.playerbanks.Main;
@@ -23,7 +19,7 @@ public class LoanObject {
 	private int bankid;
 	private int loanid;
 	private int fee;
-	private int interestrate;
+	//private int interestrate;
 	private String borrower;
 	private int interest;
 	private int borrowed;
@@ -94,7 +90,6 @@ public class LoanObject {
 	public void AddInterestToAll()
 	{
 	    FileConfiguration c = plugin.getConfig();
-	    Economy e = plugin.getEconomy();
 		List<LoanObject> lo;
 		try {
 			lo = plugin.sql.GetLoanObject();

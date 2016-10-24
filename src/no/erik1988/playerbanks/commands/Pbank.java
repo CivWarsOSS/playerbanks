@@ -576,7 +576,7 @@ implements CommandExecutor
 								int value = Integer.parseInt(info[7]);
 
 								UUID borroweruuid = UUID.fromString(info[8]);
-								int fee = Integer.parseInt(info[9]);
+								//int fee = Integer.parseInt(info[9]);
 								int bankid = Integer.parseInt(info[11]);
 								OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
 
