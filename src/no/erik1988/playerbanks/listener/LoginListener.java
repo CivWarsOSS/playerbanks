@@ -16,7 +16,7 @@ public final class LoginListener implements Listener {
     public void normalLogin(PlayerJoinEvent  event) {
     	Player player = event.getPlayer();
     	if (plugin.sql.ListMSG(player)) {
-			plugin.sql.MarkMSGAsSeen(player);
+			plugin.sql.MarkMSGAsSeen(player); 
 		}
     	if (plugin.sql.CheckIfNewTrans(player)){
     		player.sendMessage(plugin.getMessager().get("transactions.newtrans")); 

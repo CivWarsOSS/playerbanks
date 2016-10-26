@@ -121,6 +121,7 @@ implements CommandExecutor
 						//plugin.st.MakeBankThreaded(p, BankName, interest, maxloan, fee);
 						plugin.sql.MakeBank(p, BankName, interest, maxloan, fee);
 						s.sendMessage(plugin.getMessager().get("Mybank.Bank.Created").replace("%bank%", BankName));
+						s.sendMessage(plugin.getMessager().get("cmd.deposit").replace("BANK", BankName));
 						return true;
 					}
 					if (args.length == 1) {
