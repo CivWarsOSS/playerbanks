@@ -34,7 +34,7 @@ public class LoanObject {
 	{
 	    FileConfiguration c = plugin.getConfig();
 	    Economy e = plugin.getEconomy();
-		int autocharge = c.getInt("interest.autocharge.FixedAmmount");
+		int autocharge = c.getInt("interest.autocharge.FixedAmount");
 		List<LoanObject> lo;
 		try {
 			lo = plugin.sql.GetLoanObject();
