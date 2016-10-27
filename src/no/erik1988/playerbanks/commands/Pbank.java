@@ -337,7 +337,7 @@ implements CommandExecutor
 							int nrcontracts = plugin.sql.CountLoansByPlayer(p);
 							String mc3p = c.getString("loan.maxBorrow.group3.perm");
 							String mc2p = c.getString("loan.maxBorrow.group2.perm");
-							String mc1p = c.getString("loan.maxBorrow.group1.perm");
+							//String mc1p = c.getString("loan.maxBorrow.group1.perm");
 
 							if(p.hasPermission(mc3p)) {
 								int mc3 = c.getInt("loan.maxBorrow.group3.maxcontracts");
@@ -353,7 +353,7 @@ implements CommandExecutor
 									return false;
 								}
 								}
-							else if(p.hasPermission(mc1p)) {
+							else {
 								int mc1 = c.getInt("loan.maxBorrow.group1.maxcontracts");
 								if(nrcontracts > mc1){
 									p.sendMessage(plugin.getMessager().get("borrow.MaxContract").replace("%contracts%", Integer.toString(mc1)));
@@ -397,7 +397,7 @@ implements CommandExecutor
 									return false;
 								}
 							}
-							else if (s.hasPermission(group1perm)) {
+							else {
 								int group1 = c.getInt("loan.maxBorrow.group1.value");
 								if(ammount2 > group1){
 									p.sendMessage(plugin.getMessager().get("borrow.MaxLoanPerm").replace("%maxloan%", Integer.toString(group1)));
