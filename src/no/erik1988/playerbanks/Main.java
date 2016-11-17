@@ -55,10 +55,10 @@ public class Main extends JavaPlugin {
 		config.addDefault("bank.banksPerPlayer", Integer.valueOf(3));
 		config.addDefault("loan.minBorrow.value", Integer.valueOf(50));
 		//config.addDefault("loan.maxBorrow.enabled", Boolean.valueOf(true));
-		config.addDefault("loan.maxBorrow.group1.value", Integer.valueOf(500));
+		config.addDefault("loan.maxBorrow.group1.value", Integer.valueOf(100));
 		config.addDefault("loan.maxBorrow.group1.maxcontracts", Integer.valueOf(3));
-		//config.addDefault("loan.maxBorrow.group1.perm", "pbank.group1");
-		config.addDefault("loan.maxBorrow.group2.value", Integer.valueOf(750));
+		//config.addDefault("loan.maxBorrow.group1.perm", "pbank.group1"); 
+		config.addDefault("loan.maxBorrow.group2.value", Integer.valueOf(500));
 		config.addDefault("loan.maxBorrow.group2.perm", "pbank.group2");
 		config.addDefault("loan.maxBorrow.group2.maxcontracts", Integer.valueOf(4));
 		config.addDefault("loan.maxBorrow.group3.value", Integer.valueOf(1000));
