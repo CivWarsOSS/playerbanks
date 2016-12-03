@@ -75,7 +75,7 @@ public class LoanObject {
 	            //5.Autopayment
 	            int logtype = 5;  
 	            //plugin.st.MakeLogThreaded(logtype, loanid, autocharge, player, bankid, 0,uuid);
-	            plugin.MakeLogPre(logtype, loanid, autocharge, player, bankid, 0,uuid);
+	            plugin.LogTransPre(logtype, loanid, autocharge, player, bankid, 0,uuid);
 	            LogHandler.info("loan id: " + loanid +" downpayed with: "+ autocharge +" from: "+ player.getName().toString());
 	            //plugin.st.CheckifLoanIsPayedThreaded(loanid);
 	            plugin.CheckifLoanIsPayed(loanid);
@@ -135,7 +135,7 @@ public class LoanObject {
                 //4.interest
                 //5.Autopayment
                 int logtype = 4; 
-                plugin.sql.MakeLog(logtype, loanid, transacton, player, bankid,0);
+                plugin.sql.LogTrans(logtype, loanid, transacton, player, bankid,0);
                 //plugin.ShowTransIfOnline(uuid);
 			}
 		} catch (SQLException e1) {

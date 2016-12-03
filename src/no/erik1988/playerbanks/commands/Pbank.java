@@ -3,6 +3,7 @@ package no.erik1988.playerbanks.commands;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -16,6 +17,8 @@ import org.bukkit.entity.Player;
 import net.milkbowl.vault.economy.Economy;
 import no.erik1988.playerbanks.LogHandler;
 import no.erik1988.playerbanks.Main;
+import no.erik1988.playerbanks.PaginatedResult;
+import no.erik1988.playerbanks.objects.PageObject;
 
 public class Pbank 
 implements CommandExecutor
@@ -51,6 +54,8 @@ implements CommandExecutor
 						p.sendMessage(this.plugin.getMessager().get("cmd.contracts"));
 						p.sendMessage(this.plugin.getMessager().get("cmd.reports"));
 						p.sendMessage(this.plugin.getMessager().get("cmd.RemBank"));
+						p.sendMessage(this.plugin.getMessager().get("cmd.managers"));
+						p.sendMessage(this.plugin.getMessager().get("cmd.log"));
 					}
 					p.sendMessage(this.plugin.getMessager().get("cmd.list"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.info"));
@@ -118,10 +123,18 @@ implements CommandExecutor
 							p.sendMessage(this.plugin.getMessager().get("MakeBank.minborrow").replace("%minborrow%", Integer.toString(minborrow)));
 							return false;
 						}
-						//plugin.st.MakeBankThreaded(p, BankName, interest, maxloan, fee);
+
 						plugin.sql.MakeBank(p, BankName, interest, maxloan, fee);
 						s.sendMessage(plugin.getMessager().get("Mybank.Bank.Created").replace("%bank%", BankName));
 						s.sendMessage(plugin.getMessager().get("cmd.deposit").replace("BANK", BankName));
+						
+						int bankid = plugin.sql.GetBankID(BankName);
+						String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
+						String log = plugin.getMessager().get("log.BankMade").replace("%time%", timestamp).replace("%bank%", BankName);
+
+
+						plugin.sql.AddLog(bankid, log);						
+
 						return true;
 					}
 					if (args.length == 1) {
@@ -129,6 +142,7 @@ implements CommandExecutor
 						String med = c.getString("interest.med")+ "%";
 						String hi = c.getString("interest.high")+ "%";
 						p.sendMessage(this.plugin.getMessager().get("Main.Divider"));
+						p.sendMessage(this.plugin.getMessager().get("desc.MakeBank0"));
 						p.sendMessage(this.plugin.getMessager().get("desc.MakeBank1"));
 						p.sendMessage(this.plugin.getMessager().get("desc.MakeBank2").replace("%low%", low).replace("%med%", med).replace("%hi%", hi));
 						p.sendMessage(this.plugin.getMessager().get("desc.MakeBank3"));
@@ -165,21 +179,21 @@ implements CommandExecutor
 							return false;
 						}
 						//p.sendMessage("Checking if owner..");
-						if (!plugin.sql.CheckIfOwner(p, BankName)) {
-							p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
+						if (!plugin.sql.CheckIfOwner(p, BankName) && !plugin.sql.CheckIfManager(p, BankName)) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.YouCannotManage"));
 							return false;
 						}
 						//p.sendMessage("Checking if enougth money..");
-						int ammount2 = Integer.parseInt(args[2]);
-						if (!checkMoney(p, ammount2)) {
+						int amount2 = Integer.parseInt(args[2]);
+						if (!checkMoney(p, amount2)) {
 							return false;
 						}
 
 						Economy e = plugin.getEconomy();
-						e.withdrawPlayer(p.getPlayer(), ammount2);
+						e.withdrawPlayer(p.getPlayer(), amount2);
 						Integer BankID = plugin.sql.GetBankID(BankName);
-						//plugin.st.DepositThreaded(p, BankID, ammount2);
-						plugin.sql.Deposit(p, BankID, ammount2);
+						//plugin.st.DepositThreaded(p, BankID, amount2);
+						plugin.sql.Deposit(p, BankID, amount2);
 						//0.deposit
 						//1.withdraw
 						//2.borrow/loan
@@ -189,13 +203,14 @@ implements CommandExecutor
 						int logtype = 0; 
 						int code = 0; 
 						UUID uuid = p.getUniqueId();
-						//plugin.st.MakeLogThreaded(logtype, code, ammount2, p, BankID,1,uuid);
-						plugin.MakeLogPre(logtype, code, ammount2, p, BankID,1,uuid);
+						//plugin.st.MakeLogThreaded(logtype, code, amount2, p, BankID,1,uuid);
+						plugin.LogTransPre(logtype, code, amount2, p, BankID,1,uuid);
 						
-						String ammountasstring = Integer.toString(ammount2);
-						p.sendMessage(plugin.getMessager().get("eco.TransferedToBank").replace("%money%", ammountasstring));
+						String amountasstring = Integer.toString(amount2);
+						p.sendMessage(plugin.getMessager().get("eco.TransferedToBank").replace("%money%", amountasstring));
 						return true;
 					}
+					p.sendMessage(this.plugin.getMessager().get("desc.Deposit"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.deposit"));
 					return false;
 				}
@@ -229,16 +244,16 @@ implements CommandExecutor
 							p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
 							return false;
 						}
-						int ammount2 = Integer.parseInt(args[2]);
-						if (!plugin.sql.CheckMoneyBank(p, BankName,ammount2)) {
+						int amount2 = Integer.parseInt(args[2]);
+						if (!plugin.sql.CheckMoneyBank(p, BankName,amount2)) {
 							p.sendMessage(plugin.getMessager().get("eco.NotEnougthMoney"));
 							return false;
 						}
 						Integer BankID = plugin.sql.GetBankID(BankName);
-						//plugin.st.WithdrawThreaded(p, BankID, ammount2);
-						plugin.sql.Withdraw(p, BankID, ammount2);
+						//plugin.st.WithdrawThreaded(p, BankID, amount2);
+						plugin.sql.Withdraw(p, BankID, amount2);
 						Economy e = plugin.getEconomy();
-						e.depositPlayer(p.getPlayer(), ammount2);
+						e.depositPlayer(p.getPlayer(), amount2);
 						//0.deposit
 						//1.withdraw
 						//2.borrow/loan
@@ -248,12 +263,13 @@ implements CommandExecutor
 						int logtype = 1; 
 						int code = 0; 
 						UUID uuid = p.getUniqueId();
-						//plugin.st.MakeLogThreaded(logtype, code, ammount2, p, BankID,1,uuid);
-						plugin.MakeLogPre(logtype, code, ammount2, p, BankID,1,uuid);
-						String ammountasstring = Integer.toString(ammount2);
-						p.sendMessage(plugin.getMessager().get("eco.TransferedFromBank").replace("%money%", ammountasstring));
+						//plugin.st.MakeLogThreaded(logtype, code, amount2, p, BankID,1,uuid);
+						plugin.LogTransPre(logtype, code, amount2, p, BankID,1,uuid);
+						String amountasstring = Integer.toString(amount2);
+						p.sendMessage(plugin.getMessager().get("eco.TransferedFromBank").replace("%money%", amountasstring));
 						return true;
 					}
+					p.sendMessage(this.plugin.getMessager().get("desc.Withdraw"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.withdraw"));
 					return false;
 				}
@@ -284,7 +300,7 @@ implements CommandExecutor
 						Integer BankID = plugin.sql.GetBankID(BankName);
 						//check if no active loans.
 						if (plugin.sql.CheckIfBankHasLoans(BankID)) {
-							p.sendMessage(this.plugin.getMessager().get("Mybank.Remove..HasActiveLoans"));
+							p.sendMessage(this.plugin.getMessager().get("Mybank.Remove.HasActiveLoans"));
 							return false;
 						}
 						plugin.sql.RemBank(BankID);
@@ -293,7 +309,9 @@ implements CommandExecutor
 						p.sendMessage(plugin.getMessager().get("Mybank.Remove.RemSuccess").replace("%bank%", BankName));
 						return true;
 					}
+					p.sendMessage(this.plugin.getMessager().get("desc.RemBank"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.RemBank"));
+					
 					return false;
 				}
 				//pbank b BANK AMOUNT
@@ -304,15 +322,15 @@ implements CommandExecutor
 							p.sendMessage(this.plugin.getMessager().get("cmd.borrow"));
 							return false;
 						}
-						int ammount2 = Integer.parseInt(args[2]);
+						int amount2 = Integer.parseInt(args[2]);
 						//int arg2 = Integer.parseInt(args[2]);
-						if(ammount2 <= 0){
+						if(amount2 <= 0){
 							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 							p.sendMessage(this.plugin.getMessager().get("cmd.borrow"));
 							return false;
 						}
 						int minborrow = c.getInt("loan.minBorrow.value");
-						if(ammount2 < minborrow){
+						if(amount2 < minborrow){
 							p.sendMessage(this.plugin.getMessager().get("cmd.MinBorrow").replace("%minborrow%", Integer.toString(minborrow)));
 							return false;
 						}
@@ -322,7 +340,7 @@ implements CommandExecutor
 							return false;
 						}
 						//p.sendMessage("Checking if owner..");
-						if (plugin.sql.CheckIfOwner(p, BankName)) {
+						if (plugin.sql.CheckIfOwner(p, BankName) || plugin.sql.CheckIfManager(p, BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("borrow.YouOwnThisBank"));
 							return false;
 						}
@@ -373,7 +391,8 @@ implements CommandExecutor
 						int maxloan = Integer.parseInt(info[5]);
 						UUID owneruuid = UUID.fromString(info[6]);
 						int fee = Integer.parseInt(info[7]);
-						if (maxloan < ammount2) {
+						int bankid = Integer.parseInt(info[8]);
+						if (maxloan < amount2) {
 							p.sendMessage(plugin.getMessager().get("borrow.MaxLoan").replace("%maxloan%", Integer.toString(maxloan)));
 							return false;
 						}
@@ -382,31 +401,30 @@ implements CommandExecutor
 						if (!s.hasPermission(groupUnlimitedperm)) {
 							String group3perm = c.getString("loan.maxBorrow.group3.perm");
 							String group2perm = c.getString("loan.maxBorrow.group2.perm");
-							String group1perm = c.getString("loan.maxBorrow.group1.perm");
 							if (s.hasPermission(group3perm)) {
 								int group3 = c.getInt("loan.maxBorrow.group3.value");
-								if(ammount2 > group3){
+								if(amount2 > group3){
 									p.sendMessage(plugin.getMessager().get("borrow.MaxLoanPerm").replace("%maxloan%", Integer.toString(group3)));
 									return false;
 								}
 							}
 							else if (s.hasPermission(group2perm)) {
 								int group2 = c.getInt("loan.maxBorrow.group2.value");
-								if(ammount2 > group2){
+								if(amount2 > group2){
 									p.sendMessage(plugin.getMessager().get("borrow.MaxLoanPerm").replace("%maxloan%", Integer.toString(group2)));
 									return false;
 								}
 							}
 							else {
 								int group1 = c.getInt("loan.maxBorrow.group1.value");
-								if(ammount2 > group1){
+								if(amount2 > group1){
 									p.sendMessage(plugin.getMessager().get("borrow.MaxLoanPerm").replace("%maxloan%", Integer.toString(group1)));
 									return false;
 								}
 							}
 						}
 						//checks if bank have enougth money.
-						if (value < ammount2) {
+						if (value < amount2) {
 							p.sendMessage(plugin.getMessager().get("borrow.NotEnougthMoney"));
 							return false;
 						}
@@ -417,21 +435,28 @@ implements CommandExecutor
 							return false;
 						}
 						*/
-						//plugin.st.ReqLoanThreaded(p, BankName, interestrate, ammount2, fee);
-						plugin.sql.ReqLoan(p, BankName, interestrate, ammount2, fee);
-						p.sendMessage(plugin.getMessager().get("borrow.RequestSendt").replace("%money%", Integer.toString(ammount2)).replace("%owner%", owner));
-						OfflinePlayer Ownerplayer = Bukkit.getPlayer(owneruuid);
+						//plugin.st.ReqLoanThreaded(p, BankName, interestrate, amount2, fee);
+						plugin.sql.ReqLoan(p, BankName, interestrate, amount2, fee);
+						p.sendMessage(plugin.getMessager().get("borrow.RequestSendt").replace("%money%", Integer.toString(amount2)).replace("%bank%", BankName));
+						//OfflinePlayer Ownerplayer = Bukkit.getPlayer(owneruuid);
 						//Player Ownerplayer = (Player) Bukkit.getOfflinePlayer(owneruuid);
 						String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
-						String msg = plugin.getMessager().get("Mybank.Request").replace("%money%", Integer.toString(ammount2)).replace("%player%", p.getName().toString()).replace("%time%", timestamp);
+						String msg = plugin.getMessager().get("log.Request").replace("%money%", Integer.toString(amount2)).replace("%player%", p.getName().toString()).replace("%time%", timestamp).replace("%bank%", BankName);
+						//TODO: Check if log.request should be replaced.
+
+						plugin.sql.AddLog(bankid, msg);
+
 						
-						//plugin.st.AddMSGThreaded(Ownerplayer, msg, owneruuid);
-						plugin.sql.AddMSG(Ownerplayer, msg, owneruuid);
 						
-						plugin.ShowMsgIfOnline(owneruuid);
+						UUID managerUUID = plugin.sql.GetManagerUUID(BankName);
+						plugin.SendMsgIfOnline(owneruuid, msg);
+						if (managerUUID != null){
+							plugin.SendMsgIfOnline(managerUUID, msg);
+						}
 						return true;
 
 					}
+					p.sendMessage(this.plugin.getMessager().get("desc.Borrow"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.borrow"));
 					return false;
 				}
@@ -459,24 +484,24 @@ implements CommandExecutor
 							return false;
 						}
 						//p.sendMessage("Checking if enougth money..");
-						int ammount2 = Integer.parseInt(args[2]);
-						if (!checkMoney(p, ammount2)) {
+						int amount2 = Integer.parseInt(args[2]);
+						if (!checkMoney(p, amount2)) {
 							return false;
 						}
 						//check how much is left of loan.
 						int paymentsleft = plugin.sql.CheckMoneyLeftLoan(code);
-						if (paymentsleft < ammount2) {
-							ammount2 = paymentsleft;
+						if (paymentsleft < amount2) {
+							amount2 = paymentsleft;
 						}
 						int bankid = plugin.sql.GetBankIDFromLoan(code);
-						//plugin.st.DownpayThreaded(code,ammount2);
-						plugin.sql.Downpay(code,ammount2);
+						//plugin.st.DownpayThreaded(code,amount2);
+						plugin.sql.Downpay(code,amount2);
 						Economy e = plugin.getEconomy();
-						e.withdrawPlayer(p.getPlayer(), ammount2);
-						//plugin.st.DepositThreaded(p, bankid, ammount2);
-						plugin.sql.Deposit(p, bankid, ammount2);
+						e.withdrawPlayer(p.getPlayer(), amount2);
+						//plugin.st.DepositThreaded(p, bankid, amount2);
+						plugin.sql.Deposit(p, bankid, amount2);
 						//Integer BankID = plugin.sql.GetBankID(BankName);
-						//plugin.sql.Deposit(p, BankID, ammount2);
+						//plugin.sql.Deposit(p, BankID, amount2);
 						//0.deposit
 						//1.withdraw
 						//2.borrow/loan
@@ -485,64 +510,247 @@ implements CommandExecutor
 						//5.Autopayment
 						int logtype = 3; 
 						UUID uuid = p.getUniqueId();
-						//plugin.st.MakeLogThreaded(logtype, code, ammount2, p, bankid,1,uuid);
-						plugin.MakeLogPre(logtype, code, ammount2, p, bankid,1,uuid);
+						//plugin.st.MakeLogThreaded(logtype, code, amount2, p, bankid,1,uuid);
+						plugin.LogTransPre(logtype, code, amount2, p, bankid,1,uuid);
 						plugin.ShowTransIfOnline(uuid);
 						
-						p.sendMessage(plugin.getMessager().get("Loans.Downpayment").replace("%money%", Integer.toString(ammount2)).replace("%id%", Integer.toString(code)));
+						p.sendMessage(plugin.getMessager().get("Loans.Downpayment").replace("%money%", Integer.toString(amount2)).replace("%id%", Integer.toString(code)));
 						
 						//plugin.st.CheckifLoanIsPayedThreaded(code);
 						plugin.CheckifLoanIsPayed(code);
 						return true;
 					}
+					p.sendMessage(this.plugin.getMessager().get("desc.Pay"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.pay"));
 					return false;
 
 				}
 				if(args[0].equalsIgnoreCase("me")){
-					p.sendMessage(plugin.getMessager().get("Mybank.Bank.Header")); 
-					plugin.sql.MyBanks(p);
-					p.sendMessage(plugin.getMessager().get("info.bankinfo")); 
-					return true;
-				}
-				if(args[0].equalsIgnoreCase("msg")){
-					p.sendMessage(plugin.getMessager().get("msg.msg.head")); 
-					if (!plugin.sql.ListMSGAll(p)) {
-						s.sendMessage(plugin.getMessager().get("msg.nomsg"));
-						//p.sendMessage("messages was displayed");
+					
+					List<PageObject> loglist = plugin.sql.MyBanks(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("Mybank.Bank.Null"));
+						return false;
 					}
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+					new PaginatedResult<PageObject>(plugin.getMessager().get("Mybank.Bank.Header"),plugin.getMessager().get("info.bankinfo")){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+						
+					}.display(p, loglist, arg1);
+					
 					return true;
 				}
-				if(args[0].equalsIgnoreCase("transactions") || args[0].equalsIgnoreCase("trans")){
+				
+				if(args[0].equalsIgnoreCase("msg")){
+					int arg1 = 1;
 					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+
+					List<PageObject> loglist = plugin.sql.ListMSGAll(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("msg.null"));
+						return false;
+					}
+					new PaginatedResult<PageObject>(plugin.getMessager().get("msg.msg.head").replace("%player%", p.getDisplayName()),""){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						} 
+					}.display(p, loglist, arg1);
+					return true;
+
+				}
+				//pbank trans [bank] [page]
+				if(args[0].equalsIgnoreCase("transactions") || args[0].equalsIgnoreCase("trans")){
+					if (args.length >= 2 && !isInt(args[1])) {
 						String BankName = args[1].toLowerCase(); 
 						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
 							return false;
 						}
 						//p.sendMessage("Checking if owner..");
-						if (!plugin.sql.CheckIfOwner(p, BankName)) {
+						if (!plugin.sql.CheckIfOwner(p, BankName) && !plugin.sql.CheckIfManager(p, BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
 							return false;
-						}
-						Integer BankID = plugin.sql.GetBankID(BankName);
-						p.sendMessage(plugin.getMessager().get("msg.trans.head"));
-						if(!plugin.sql.ListTransBank(p,BankID)){
-							s.sendMessage(plugin.getMessager().get("msg.trans.notrans"));
-							return false;
 						} 
+						Integer bankid = plugin.sql.GetBankID(BankName);
+						int arg2 = 1;
+						if (args.length == 3) {
+							if (!isInt(args[2])) {
+								p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+								return false;
+							}
+							arg2 = Integer.parseInt(args[2]);
+						}
+
+						List<PageObject> loglist = plugin.sql.GetTransBank(p, bankid);
+						if(loglist.isEmpty()){
+							p.sendMessage(this.plugin.getMessager().get("transactions.null"));
+							return false;
+						}
+						new PaginatedResult<PageObject>("Transactions for " + BankName + " Bank",this.plugin.getMessager().get("desc.Log")){
+
+							@Override
+							public String format(PageObject entry) {
+								return entry.getmsg();
+							}
+						}.display(p, loglist, arg2);
 						return true;
 					}
-					p.sendMessage(plugin.getMessager().get("msg.trans.head"));
-					if (plugin.sql.ListTransAll(p)) {
-						//plugin.st.MarkTransAsSeenThreaded(p);
-						plugin.sql.MarkTransAsSeen(p);
-					}else{
-						s.sendMessage(plugin.getMessager().get("msg.nomsg"));
-						//p.sendMessage("messages was displayed");
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
 					}
+					List<PageObject> loglist = plugin.sql.GetTransPlayer(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("transactions.null"));
+						return false;
+					}
+					new PaginatedResult<PageObject>("Transactions for " + p.getDisplayName() + "",""){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+					}.display(p, loglist, arg1);
 					return true;
+					
 				}
+				//pbank log BANK [page]
+				if(args[0].equalsIgnoreCase("log")){
+					if (args.length >= 2) {
+						String BankName = args[1].toLowerCase(); 
+						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
+							return false;
+						}
+						//p.sendMessage("Checking if owner..");
+						if (!plugin.sql.CheckIfOwner(p, BankName) && !plugin.sql.CheckIfManager(p, BankName)) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
+							return false;
+						} 
+
+						int arg2 = 1;
+						if (args.length == 3) {
+							if (!isInt(args[2])) {
+								p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+								return false;
+							}
+							arg2 = Integer.parseInt(args[2]);
+						}
+
+						Integer BankID = plugin.sql.GetBankID(BankName);
+						List<PageObject> loglist = plugin.sql.GetLogObject(BankID);
+						if(loglist.isEmpty()){
+							p.sendMessage(this.plugin.getMessager().get("log.null"));
+							return false;
+						}
+						new PaginatedResult<PageObject>(this.plugin.getMessager().get("log.Header").replace("%bank%", BankName),this.plugin.getMessager().get("desc.Trans")){
+
+							@Override
+							public String format(PageObject entry) {
+								return entry.getmsg();
+							}
+						}.display(p, loglist, arg2);
+						return true;
+					}
+					p.sendMessage(this.plugin.getMessager().get("cmd.log"));
+					return false;
+					
+				}
+
+				//pbank manager BANK [add|clear] [PLAYER]
+				if(args[0].equalsIgnoreCase("manager") || args[0].equalsIgnoreCase("man")){
+					if (args.length >= 2) {
+						String BankName = args[1].toLowerCase(); 
+						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
+							return false;
+						}
+						if (args.length >= 3) {
+						if(args[2].equalsIgnoreCase("clear")){
+							if (!plugin.sql.CheckIfOwner(p, BankName)) {
+								p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
+								return false;
+							}
+							//remove manager
+							plugin.sql.ClearManager(BankName);
+							p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Clear"));
+							return true;
+						}
+						
+						if (args.length == 4) {
+							if(args[2].equalsIgnoreCase("add")){
+								if (!plugin.sql.CheckIfOwner(p, BankName)) {
+									p.sendMessage(this.plugin.getMessager().get("cmd.YouDontOwnThisBank"));
+									return false;
+								}
+								//add manager
+
+								String managername = args[3];
+
+								OfflinePlayer managerplayer = FindPlayerByName(managername);
+							    if (managerplayer == null || !managerplayer.hasPlayedBefore()){
+							    	p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.UnknownPlayer"));
+							    	return false;
+							    }
+							    if (managerplayer == p){
+							    	p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.NotYourself"));
+							    	return false;
+							    }
+								if (plugin.sql.CheckIfLoanExsist(managerplayer, BankName)) {
+									p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.PlayerHasLoan"));
+									return false;
+								}
+							    
+							    String mname = managerplayer.getName();
+								plugin.sql.AddManager(managerplayer,BankName);
+								p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Added").replace("%player%", mname));
+								return true;
+							}
+
+						}
+						}
+						//list manager
+						String manager2 = plugin.sql.ListManager(BankName);
+						if (manager2 == null){
+							p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.NoManager"));
+							return false;
+						}
+						p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.List").replace("%player%", manager2));
+						return true;
+						
+
+					}
+					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Manager"));
+					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.CanDo"));
+					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.CanNotDo"));
+					p.sendMessage(this.plugin.getMessager().get("cmd.managers"));
+					return false;
+				}
+				
+				//admin cmd bellow
 				if(args[0].equalsIgnoreCase("cleanup")){
 					if (!s.hasPermission("pbank.admin")) {
 						s.sendMessage("No Permissions");
@@ -552,8 +760,9 @@ implements CommandExecutor
 					plugin.cleanUp();
 					return true;
 				}
+				//pbank c [app|del] [id]
 				if(args[0].equalsIgnoreCase("contracts") || args[0].equalsIgnoreCase("c")){
-					if (args.length >= 2) {
+					if (args.length >= 2 ) {
 						if(args[1].equalsIgnoreCase("approve") || args[1].equalsIgnoreCase("app")){
 							if (args.length == 3) {
 								if (!isInt(args[2])) {
@@ -562,7 +771,7 @@ implements CommandExecutor
 									return false;
 								}
 								int code = Integer.parseInt(args[2]);
-								if(!plugin.sql.CheckIfLoanExsistCodeOwner(p,code)){
+								if(!plugin.sql.CheckIfLoanExsistCodeManage(p,code)){
 									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.CantfindContract"));
 									return false;
 								}
@@ -609,16 +818,19 @@ implements CommandExecutor
 								//5.Autopayment
 								int logtype = 2; 
 								//plugin.st.MakeLogThreaded(logtype, code, borrowed, borrowerplayer, bankid,0,borroweruuid);
-								plugin.MakeLogPre(logtype, code, borrowed, borrowerplayer, bankid,0,borroweruuid);
+								plugin.LogTransPre(logtype, code, borrowed, borrowerplayer, bankid,0,borroweruuid);
 
 								p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.Acitvated").replace("%contract%", Integer.toString(code)));
 								String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
 							 
-								String msg = plugin.getMessager().get("borrow.Approved").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%time%", timestamp);
+								String msg = plugin.getMessager().get("borrow.Approved").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName()).replace("%time%", timestamp);
 								//plugin.st.AddMSGThreaded(borrowerplayer, msg,borroweruuid);
 								plugin.sql.AddMSG(borrowerplayer, msg,borroweruuid);
 								plugin.ShowMsgIfOnline(borroweruuid);
 								plugin.ShowTransIfOnline(borroweruuid);
+								
+								String log = plugin.getMessager().get("borrow.Approved").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName()).replace("%time%", timestamp);
+								plugin.sql.AddLog(bankid, log);
 								
 								return true;
 							}
@@ -642,23 +854,29 @@ implements CommandExecutor
 										String[] info = plugin.sql.GetLoanInfo(code);
 										int borrowed = Integer.parseInt(info[3]);
 										UUID borroweruuid = UUID.fromString(info[8]);
+										int bankid = Integer.parseInt(info[11]);
 										OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
 										String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
 										
-										String msg = plugin.getMessager().get("borrow.Pardoned").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%time%", timestamp);
+										String msg = plugin.getMessager().get("borrow.Pardoned").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
 										
 										
 										
 										plugin.sql.DeleteLoan(code);
-										//plugin.st.AddMSGThreaded(borrowerplayer, msg,borroweruuid);
-										plugin.sql.AddMSG(borrowerplayer, msg,borroweruuid);
+
+										plugin.sql.AddMSG(borrowerplayer, msg, borroweruuid);
 										plugin.ShowMsgIfOnline(borroweruuid);
+										
+										String log = plugin.getMessager().get("log.Pardoned").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+										plugin.sql.AddLog(bankid, log);
+										
 										LogHandler.info("loanid: "+ code + " was deleted by "+ p.getName().toString() + " (bankmanager)");
 										p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.DelSuccess").replace("%id%", Integer.toString(code)));
 										return true;
 
 									}
 									return false;
+									
 								}
 								if(plugin.sql.CheckIfLoanIsActive(code)){
 									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.DelIsActive").replace("%id%", Integer.toString(code)));
@@ -668,12 +886,16 @@ implements CommandExecutor
 								String[] info = plugin.sql.GetLoanInfo(code);
 								int borrowed = Integer.parseInt(info[3]);
 								UUID borroweruuid = UUID.fromString(info[8]);
+								int bankid = Integer.parseInt(info[11]);
 								OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
 								
 								String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
-								String msg = plugin.getMessager().get("borrow.Denied").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%time%", timestamp);
+								String msg = plugin.getMessager().get("borrow.Denied").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
 								//plugin.st.AddMSGThreaded(borrowerplayer, msg,borroweruuid);
 								plugin.sql.AddMSG(borrowerplayer, msg,borroweruuid);
+								
+								String log = plugin.getMessager().get("log.Denied").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+								plugin.sql.AddLog(bankid, log);
 								
 								plugin.ShowMsgIfOnline(borroweruuid);
 
@@ -685,22 +907,43 @@ implements CommandExecutor
 
 						}
 						if(args[1].equalsIgnoreCase("info") || args[1].equalsIgnoreCase("i")){
-							if (!isInt(args[2])) {
-								p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
-								return false;
+							if (args.length == 3) {
+								if (!isInt(args[2])) {
+									p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+									return false;
+								}
+								int code = Integer.parseInt(args[2]);
+								if(!plugin.sql.CheckIfLoanExsistCodeManage(p,code)){
+									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.CantfindContract"));
+									return false;
+								}
+								//info about contract.
+								return true;
 							}
-							int code = Integer.parseInt(args[2]);
-							if(!plugin.sql.CheckIfLoanExsistCodeOwner(p,code)){
-								p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.CantfindContract"));
-								return false;
-							}
-							//info about contract.
-							return true;
 						}
 					}
-					p.sendMessage(plugin.getMessager().get("Mybank.Contracts.Header")); 
-					plugin.sql.ListContracts(p);
-					p.sendMessage(this.plugin.getMessager().get("cmd.contracts"));
+					List<PageObject> loglist = plugin.sql.ListContracts(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.Null"));
+						return false;
+					}
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+					new PaginatedResult<PageObject>(plugin.getMessager().get("Mybank.Contracts.Header"),plugin.getMessager().get("cmd.contracts")){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+						
+					}.display(p, loglist, arg1);
+					
 					return true;
 				}
 				if(args[0].equalsIgnoreCase("loans") || args[0].equalsIgnoreCase("requests")){
@@ -728,14 +971,61 @@ implements CommandExecutor
 							return true;
 						}
 					}
-					p.sendMessage(plugin.getMessager().get("borrow.Loans.Header")); 
-					plugin.sql.ListRequests(p);
+					List<PageObject> loglist = plugin.sql.ListRequests(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("borrow.Loans.Null"));
+						return false;
+					}
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+					String footer = plugin.getMessager().get("cmd.loans") + "\n" + plugin.getMessager().get("cmd.pay");
+					new PaginatedResult<PageObject>(plugin.getMessager().get("borrow.Loans.Header"),footer){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+						
+					}.display(p, loglist, arg1);
+					
 					return true;
 				}
 				if(args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")){
-					p.sendMessage(plugin.getMessager().get("Banks.Bank.Header")); 
-					plugin.sql.BankList(p);
-					p.sendMessage(plugin.getMessager().get("info.bankinfo")); 
+					
+					List<PageObject> loglist = plugin.sql.BankList(p);
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("Banks.Bank.Null"));
+						return false;
+					}
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+
+					new PaginatedResult<PageObject>(plugin.getMessager().get("Banks.Bank.Header"),plugin.getMessager().get("info.bankinfo")){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+						
+					}.display(p, loglist, arg1);
+					
+					
+					
+					
+					//p.sendMessage(plugin.getMessager().get("Banks.Bank.Header")); 
+					//p.sendMessage(plugin.getMessager().get("info.bankinfo")); 
 					return true; 
 				}
 				if(args[0].equalsIgnoreCase("NewDay")){
@@ -749,14 +1039,17 @@ implements CommandExecutor
 					//p.sendMessage("New Day!");
 					return true;
 				}
+				//pbank rep [read] [#] [page]
 				if(args[0].equalsIgnoreCase("reports") || args[0].equalsIgnoreCase("rep")){
-					if (args.length == 2) {
-						if (!isInt(args[1])) {
+					if (args.length == 3) {
+						if(args[1].equalsIgnoreCase("read")){
+
+						if (!isInt(args[2])) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 							return false;
 						}
-						int loanid = Integer.parseInt(args[1]);
-						if(!plugin.sql.CheckIfReportExsistCodeOwner(p,loanid)){
+						int loanid = Integer.parseInt(args[2]);
+						if(!plugin.sql.CheckIfReportExsistCodeManage(p,loanid)){ 
 							p.sendMessage(this.plugin.getMessager().get("Mybank.Report.CantfindReport"));
 							return false;
 						}
@@ -805,11 +1098,31 @@ implements CommandExecutor
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line6").replace("%downpayed%", downpayeddateFormat));
 						p.sendMessage(plugin.getMessager().get("Main.Divider"));
 						return true;
+						}
+						p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+						return false;
 					}
-					//show list of all reports
-					p.sendMessage(plugin.getMessager().get("Mybank.ReportList.Head"));
-					plugin.sql.ListReports(p);
-					p.sendMessage(plugin.getMessager().get("cmd.reports"));
+					List<PageObject> loglist = plugin.sql.ListReports(p);;
+					if(loglist.isEmpty()){
+						p.sendMessage(this.plugin.getMessager().get("Mybank.ReportList.Null"));
+						return false;
+					}
+					int arg1 = 1;
+					if (args.length == 2) {
+						if (!isInt(args[1])) {
+							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+							return false;
+						}
+						arg1 = Integer.parseInt(args[1]);
+					}
+					new PaginatedResult<PageObject>(plugin.getMessager().get("Mybank.ReportList.Header"),plugin.getMessager().get("cmd.reports")){
+
+						@Override
+						public String format(PageObject entry) {
+							return entry.getmsg();
+						}
+						
+					}.display(p, loglist, arg1);
 					return true;
 					}
 				
@@ -843,9 +1156,13 @@ implements CommandExecutor
 						else if(interestrate == 3){
 							interestrateAsString = c.getString("interest.high")+ "%";
 						}
-
+						String manager = info[9];
+						if(manager == null){
+							manager = "-";
+						}
 						p.sendMessage(plugin.getMessager().get("Main.Divider")); 
-						p.sendMessage(plugin.getMessager().get("Banks.Info.Name").replace("%owner%", owner).replace("%bank%", BankName));
+						p.sendMessage(plugin.getMessager().get("Banks.Info.Name").replace("%bank%", BankName));
+						p.sendMessage(plugin.getMessager().get("Banks.Info.Management").replace("%owner%", owner).replace("%manager%", manager));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Value").replace("%value%", Integer.toString(value)).replace("%receivables%", receivablesasstirng));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Interest").replace("%maxloan%", Integer.toString(maxloan)).replace("%interest%", interestrateAsString));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Fee").replace("%fee%", Integer.toString(fee)));
@@ -893,7 +1210,7 @@ implements CommandExecutor
 
 		return false;
 	}
-	public boolean checkMoney(Player p, double ammount)
+	public boolean checkMoney(Player p, double amount)
 	{
 		double money;
 		Economy e = plugin.getEconomy();
@@ -902,12 +1219,23 @@ implements CommandExecutor
 			return false;
 		}
 		money = e.getBalance(p.getPlayer());
-		if (money < ammount) {
+		if (money < amount) {
 			String moneyAsString = Double.toString(money);
 			p.sendMessage(plugin.getMessager().get("eco.NotEnougthMoney").replace("%money%", moneyAsString));
 			return false; 
 		}
 		return true;
+	}
+	@SuppressWarnings("deprecation")
+	public OfflinePlayer FindPlayerByName(String player) 
+	{
+		Player targetPlayer = Bukkit.getPlayerExact(player);
+		if(targetPlayer != null) return targetPlayer;
+		
+		targetPlayer = Bukkit.getPlayer(player);
+        if(targetPlayer != null) return targetPlayer;
+
+		return Bukkit.getOfflinePlayer(player);
 	}
 
 }

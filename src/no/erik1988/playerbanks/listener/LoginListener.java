@@ -15,6 +15,12 @@ public final class LoginListener implements Listener {
     @EventHandler
     public void normalLogin(PlayerJoinEvent  event) {
     	Player player = event.getPlayer();
+    	
+    	int count = plugin.sql.CountPendingContracts(player);
+    	if(count>0){
+    		player.sendMessage(plugin.getMessager().get("Mybank.Contracts.Pending").replace("%count%", Integer.toString(count))); 
+    	}
+    	
     	if (plugin.sql.ListMSG(player)) {
 			plugin.sql.MarkMSGAsSeen(player); 
 		}

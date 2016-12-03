@@ -23,7 +23,7 @@ public class SQLite extends Database{
     		"`id` INTEGER," +
             "`nameofbank` varchar(32) NOT NULL," +
     		"`owner` varchar(36) NOT NULL," +
-            "`managers` TEXT," +
+            "`manager` varchar(36)," +
             "`interestrate` int(1) NOT NULL," +
             "`inviteonly` int(1) NOT NULL DEFAULT 0," +
             "`value` int NOT NULL DEFAULT 0," +
@@ -67,7 +67,13 @@ public class SQLite extends Database{
     		"`seen` int(1) NOT NULL DEFAULT 0," +
             "PRIMARY KEY (`id`)" +  
             ");";
- 
+    public String SQLiteCreateLogTable = "CREATE TABLE IF NOT EXISTS pbank_log (" + 
+    		"`id` INTEGER," +
+    		"`bankid` INTEGER NOT NULL," +
+    		"`log` TEXT NOT NULL," +
+    		"`timestamp` INTEGER NOT NULL," +
+            "PRIMARY KEY (`id`)" +  
+            ");";
     // SQL creation stuff, You can leave the blow stuff untouched.
     public Connection getSQLConnection() {
         File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
@@ -101,6 +107,7 @@ public class SQLite extends Database{
             s.executeUpdate(SQLiteCreateLoansTable);
             s.executeUpdate(SQLiteCreatePaymentsTable);
             s.executeUpdate(SQLiteCreateMSGTable);
+            s.executeUpdate(SQLiteCreateLogTable);
             s.executeUpdate("PRAGMA journal_mode=WAL");
             s.close();
         } catch (SQLException e) {

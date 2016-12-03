@@ -18,7 +18,7 @@ import no.erik1988.playerbanks.sql.SQLite;
 import no.erik1988.playerbanks.commands.Pbank;
 import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
-//import no.erik1988.playerbanks.SingleThread;
+import no.erik1988.playerbanks.PaginatedResult;
 
 public class Main extends JavaPlugin {
 	FileConfiguration config = getConfig();
@@ -45,10 +45,12 @@ public class Main extends JavaPlugin {
 		config.addDefault("interest.high", Integer.valueOf(10));
 		config.addDefault("cleanup.enable", Boolean.valueOf(true));	
 		config.addDefault("cleanup.timeofday.hour", Integer.valueOf(4));
-		config.addDefault("cleanup.msg.enable", Boolean.valueOf(true));			
-		config.addDefault("cleanup.transactions.enable", Boolean.valueOf(true));
+		config.addDefault("cleanup.msg.enable", Boolean.valueOf(true));
+		config.addDefault("cleanup.log.enable", Boolean.valueOf(false));
+		config.addDefault("cleanup.transactions.enable", Boolean.valueOf(false));
 		config.addDefault("cleanup.msg.olderthan.hours", Integer.valueOf(168));
-		config.addDefault("cleanup.transactions.olderthan.hours", Integer.valueOf(336));
+		config.addDefault("cleanup.log.olderthan.hours", Integer.valueOf(720));
+		config.addDefault("cleanup.transactions.olderthan.hours", Integer.valueOf(720));
 		//config.addDefault("cleanup.removeInactive", Boolean.valueOf(false));
 		config.addDefault("bank.name.blacklist", new String[] { "server", "admin" });
 		//config.addDefault("bank.allowmanagers", Boolean.valueOf(true));
@@ -146,8 +148,10 @@ public class Main extends JavaPlugin {
 		if(cleanup){
 			boolean msg = config.getBoolean("cleanup.msg.enable");
 			boolean transactions = config.getBoolean("cleanup.transactions.enable");
-			int thours = config.getInt("cleanup.transactions.olderthan.hours",168);
-			int mhours = config.getInt("cleanup.msg.olderthan.hours",24);
+			boolean log = config.getBoolean("cleanup.log.enable");
+			int thours = config.getInt("cleanup.transactions.olderthan.hours",720);
+			int mhours = config.getInt("cleanup.msg.olderthan.hours",168);
+			int lhours = config.getInt("cleanup.log.olderthan.hours",720);
 			if(msg){
 				sql.CleanUpMSG();
 				LogHandler.info("Removed seen msg older than "+mhours+" hours.");
@@ -155,6 +159,10 @@ public class Main extends JavaPlugin {
 			if(transactions){
 				sql.CleanUpTransactions();
 				LogHandler.info("Removed seen transaction logs older than "+thours+" hours.");
+			}
+			if(log){
+				sql.CleanUpLog();
+				LogHandler.info("Removed log entries older than "+lhours+" hours.");
 			}
 		} 
 		
@@ -177,6 +185,7 @@ public class Main extends JavaPlugin {
     }
 	public void FinishLoan(int loanid){
 		String[] info = sql.GetLoanInfo(loanid);
+		int bankid = Integer.parseInt(info[11]);
 		int interest = Integer.parseInt(info[2]);
 		int borrowed = Integer.parseInt(info[3]);
 		//int payments = Integer.parseInt(info[4]);
@@ -189,23 +198,23 @@ public class Main extends JavaPlugin {
 		OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
 		OfflinePlayer ownerplayer = Bukkit.getOfflinePlayer(owneruuid);
 		String borrowerplayername = borrowerplayer.getName();
-		//st.MarkContractPayedThreaded(loanid);
+
 		sql.MarkContractPayed(loanid);
 		LogHandler.info("loanid "+loanid+" is paid down");
 		
 		String newreport = getMessager().get("Mybank.Report.NewReport").replace("%loanid%", Integer.toString(loanid));
 		
-		String msgowner = getMessager().get("Mybank.Contracts.Finished").replace("%ammount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));
-		//st.AddMSGThreaded(ownerplayer, msgowner, owneruuid);
+		String msgowner = getMessager().get("Mybank.Contracts.Finished").replace("%amount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));
+
 		sql.AddMSG(ownerplayer, newreport, owneruuid);
 		sql.AddMSG(ownerplayer, msgowner, owneruuid);
 		
-		String msgborrower = getMessager().get("borrow.Finished").replace("%ammount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));
-		//st.AddMSGThreaded(borrowerplayer, msgborrower, borroweruuid);
+		String msgborrower = getMessager().get("borrow.Finished").replace("%amount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));	
 		sql.AddMSG(borrowerplayer, msgborrower, borroweruuid);
 		
-		//st.ShowMsgIfOnlineThreaded(borroweruuid);
-		//st.ShowMsgIfOnlineThreaded(owneruuid);
+		String log = getMessager().get("log.Finished").replace("%loanid%", Integer.toString(loanid)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%amount%", Integer.toString(borrowed));
+		sql.AddLog(bankid, log);
+
 		ShowMsgIfOnline(borroweruuid);
 		ShowMsgIfOnline(owneruuid);
 	
@@ -217,6 +226,15 @@ public class Main extends JavaPlugin {
 			if (sql.ListMSG(player2)) {
 				sql.MarkMSGAsSeen(player2);
 			}
+		}
+
+	}
+
+	public void SendMsgIfOnline(UUID UUID, String msg){
+		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
+		if (player.isOnline()){
+			Player player2 = Bukkit.getPlayer(UUID);
+			player2.sendMessage(msg);
 		}
 
 	}
@@ -240,8 +258,8 @@ public class Main extends JavaPlugin {
 			loanobject.DownPayForAll();	
 		}
 	}
-	public void MakeLogPre(int type, int contract,int amount,OfflinePlayer borrowerplayer, int bankid, int seen, UUID uuid){
-		sql.MakeLog(type, contract, amount, borrowerplayer, bankid, seen);
+	public void LogTransPre(int type, int contract,int amount,OfflinePlayer borrowerplayer, int bankid, int seen, UUID uuid){
+		sql.LogTrans(type, contract, amount, borrowerplayer, bankid, seen);
 		if(seen == 0){
 			ShowTransIfOnline(uuid);
 		}
