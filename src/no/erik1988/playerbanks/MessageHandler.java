@@ -122,7 +122,7 @@ public class MessageHandler {
 		this.config.addDefault("desc.Pay", "&7You can find the loan ID by typing &3/pbank loans");
 		this.config.addDefault("desc.Borrow", "&7You can see a list of banks by typing &3/pbank list");
 		this.config.addDefault("desc.RemBank", "&7This will permanently delete your Bank.");
-		this.config.addDefault("desc.Manager", "&7You can assing a manager to help you out with your bank.");
+		this.config.addDefault("desc.Manager", "&7You can assign a manager to help you out with your bank.");
 		this.config.addDefault("desc.Trans", "&7You can also use &3/pbank trans &7to see different types of information.");
 		this.config.addDefault("desc.Log", "&7You can also use &3/pbank log &7to see different types of information.");
 		
@@ -157,24 +157,24 @@ public class MessageHandler {
 		this.config.addDefault("cmd.Wrong", "&8[!]&c You did not type the command right");
 		this.config.addDefault("cmd.BlackList", "&8[!]&c You are not allowed to use that name"); 
 		
-		this.config.addDefault("MakeBank.NameAlreadyExsist", "&8[!]&c This bank already exsist, pick a different name");
+		this.config.addDefault("MakeBank.NameAlreadyExsist", "&8[!]&c This bank already exist, pick a different name");
 		this.config.addDefault("MakeBank.ToManyBanks", "&8[!]&c You already have the maximum allowed number of banks(%nr%)");
 		this.config.addDefault("MakeBank.maxfee", "&8[!]&c You cannot have a fee larger than %nr%");
 		this.config.addDefault("MakeBank.minborrow", "&8[!]&c Your maxloan can not be lower than the minimum loan (&3%minborrow%&7)");
 		
-		this.config.addDefault("cmd.BankDoesNotExsist", "&8[!]&c The Bank does not exsist, make sure you wrote the right name.");
+		this.config.addDefault("cmd.BankDoesNotExsist", "&8[!]&c The Bank does not exist, make sure you wrote the right name.");
 		this.config.addDefault("cmd.YouDontOwnThisBank", "&8[!]&c You don't own this bank.");
 		this.config.addDefault("cmd.YouCannotManage", "&8[!]&c You are not allowed to manage this Bank");
 		
 		this.config.addDefault("eco.NotEnougthMoney", "&8[!]&c You don't have that much money");
 		this.config.addDefault("eco.AccNotExisting", "&8[!]&c This player account does not exist");
-		this.config.addDefault("eco.TransferedFromBank", "&3%money% &7has been trasfered from the bank to your account."); 
-		this.config.addDefault("eco.TransferedToBank", "&3%money% &7has been trasfered from your account to the bank.");
+		this.config.addDefault("eco.TransferedFromBank", "&3%money% &7has been transferred from the bank to your account."); 
+		this.config.addDefault("eco.TransferedToBank", "&3%money% &7has been transferred from your account to the bank.");
 		
 		this.config.addDefault("borrow.YouOwnThisBank", "&8[!]&c You cannot borrow from a bank you own or manage.");
 		this.config.addDefault("borrow.RequestSendt", "&7You have sent &5%bank% &7a request to borrow &3%money%.");
 		
-		this.config.addDefault("borrow.Approved", "&7%time% - &5%player% &2has apporved your loan of &3%money%.");
+		this.config.addDefault("borrow.Approved", "&7%time% - &5%player% &2has approved your loan of &3%money%.");
 		this.config.addDefault("borrow.Denied", "&7%time% - &5%player% &chas denied your loan of &3%money%.");
 		this.config.addDefault("borrow.Pardoned", "&7%time% - &5%player% &ahas pardoned your loan of &3%money%.");
 		this.config.addDefault("borrow.Finished", "&7%time% - &2Loan of &3%amount% &7(+ &3%interest% &7interest and &3%fee% &7fee) \n &2from &3%bank% &2has been payed down.");
@@ -183,7 +183,7 @@ public class MessageHandler {
 		this.config.addDefault("log.Header", "&eLog for bank %bank%");
 		this.config.addDefault("log.BankMade", "&7%time% - &3%bank% &7bank has been established.");
 		this.config.addDefault("log.Request", "&7%time% - &5%player% &7has requested to borrow &3%money%.");
-		this.config.addDefault("log.Approved", "&7%time% - &5%player% &2has apporved &5%borrower%s loan of &3%money%.");
+		this.config.addDefault("log.Approved", "&7%time% - &5%player% &2has approved &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Denied", "&7%time% - &5%player% &chas denied &5%borrower%s request for &3%money%.");
 		this.config.addDefault("log.Pardoned", "&7%time% - &5%player% &ahas pardoned &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Finished", "&7%time% - &2Loan of &3%amount% &2from &5%borrower%& &2has been payed down.");
@@ -195,7 +195,7 @@ public class MessageHandler {
 		this.config.addDefault("transactions.borrow", "&7%time% - &5%player% &7borrowed &3%amount% &7(+fee) &7from bank &3%bank%");
 		this.config.addDefault("transactions.payment", "&7%time% - &5%player% &7paid &3%amount% &7to bank &3%bank%");
 		this.config.addDefault("transactions.interest", "&7%time% - &3%amount% &7interest added to &5%player%'s &7loan (&3%bank%&7)");
-		this.config.addDefault("transactions.autopay", "&7%time% - &3%amount% &7was autopayed on &5%player%'s &7loan (&3%bank%&7)");
+		this.config.addDefault("transactions.autopay", "&7%time% - &3%amount% &7was auto paid on &5%player%'s &7loan (&3%bank%&7)");
 		this.config.addDefault("transactions.null", "&7There is no transactions to display.");
 		
 		//this.config.addDefault("borrow.InviteOnly", "&7This bank does not allow request, ask the owner to invite you.");
@@ -212,7 +212,7 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Contracts.Acitvated", "&7Contract &3%contract% &7has been activated");
 		this.config.addDefault("Mybank.Contracts.CantfindContract", "&8[!]&c Cannot find a contract with this id.");
 		this.config.addDefault("Mybank.Contracts.AlreadyActive", "&8[!]&c The contract is already active.");
-		this.config.addDefault("Mybank.Contracts.NotEnougthMoney", "&8[!]&c The bank does not have enought moneney for this contract.");
+		this.config.addDefault("Mybank.Contracts.NotEnougthMoney", "&8[!]&c The bank does not have enough money for this contract.");
 		this.config.addDefault("Mybank.Contracts.Header", "&eID &6BANK &eLOAN &6PLAYER &eSTATUS");
 		this.config.addDefault("Mybank.Contracts.List", "&7 &9%code% &3%bank%&7(%interest%) &3%req% &5%player% %status%");
 		this.config.addDefault("Mybank.Contracts.Null", "&7 You dont have any contracts.");
@@ -232,7 +232,7 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Report.line3", "&7Paid: &3%payment% &7Profit: &2%profit%");
 		this.config.addDefault("Mybank.Report.line4", "&7Requested: &3%requested%"); 
 		this.config.addDefault("Mybank.Report.line5", "&7Approved: &3%approved% &7- &5%manager%");
-		this.config.addDefault("Mybank.Report.line6", "&7DownPayed: &3%downpayed%");
+		this.config.addDefault("Mybank.Report.line6", "&7Down Paid: &3%downpayed%");
 		
 		this.config.addDefault("Mybank.ReportList.Header", "&eID &6BANK &eBORROWER &6DATE");  
 		this.config.addDefault("Mybank.ReportList.List", "&9%loanid% &7%bank% &5%borrower% &7%date%");
@@ -241,18 +241,18 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Report.CantfindReport", "&8[!]&cCannot find a report on loan with this id.");
 		this.config.addDefault("Mybank.Report.NewReport", "&2You have a new report available. Type &3/pbank rep %loanid%");
 		
-		this.config.addDefault("Mybank.Manager.NotYourself", "&8[!]&cYou cannot add yourself as a manager");
+		this.config.addDefault("Mybank.Manager.NotYourself", "&8[!]&cYou cannot assign yourself as a manager");
 		this.config.addDefault("Mybank.Manager.UnknownPlayer", "&8[!]&cUnknown player. Make sure the player has been online and typed correct.");
 		this.config.addDefault("Mybank.Manager.PlayerHasLoan", "&8[!]&cPlayer has contract/request in your bank. Remove the loans before making the player a manager.");
 		this.config.addDefault("Mybank.Manager.NoManager", "&8[!]&7This Bank does not have a manager.");
 		this.config.addDefault("Mybank.Manager.Clear", "&8[!]&7Manager cleared/removed");
-		this.config.addDefault("Mybank.Manager.Added", "&7Manager &5%player% &7was added to your Bank");
+		this.config.addDefault("Mybank.Manager.Added", "&7Manager &5%player% &7was assigned to your Bank");
 		this.config.addDefault("Mybank.Manager.List", "&5%player% &7is the manager of your Bank");
 		this.config.addDefault("Mybank.Manager.CanDo", "&eA manager &2CAN&e:&7 \n - App/Del requests \n - Read transactions,log and reports \n - Deposit money");
 		this.config.addDefault("Mybank.Manager.CanNotDo", "&eA manager &cCANNOT&e:&7 \n - Disband the Bank \n - Pardon loans \n - Have/request loans in the Bank \n - Withdraw money");
 		
 		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 You don't have a loan with that ID");
-		this.config.addDefault("Loans.Downpayment", "&7You have downpayed &3%money% &7on your loan(&9%id%&7)");
+		this.config.addDefault("Loans.Downpayment", "&7You have down paid &3%money% &7on your loan(&9%id%&7)");
 		this.config.addDefault("Loans.Del.IsActive", "&cYou cannot delete active contracts."); 
 		
 		this.config.addDefault("msg.null", "&7 There is no messages to display");

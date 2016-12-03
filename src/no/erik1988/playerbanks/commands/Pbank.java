@@ -521,7 +521,7 @@ implements CommandExecutor
 						return true;
 					}
 					p.sendMessage(this.plugin.getMessager().get("desc.Pay"));
-					p.sendMessage(this.plugin.getMessager().get("cmd.pay"));
+					p.sendMessage(this.plugin.getMessager().get("cmd.pay")); 
 					return false;
 
 				}
