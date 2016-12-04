@@ -3,16 +3,11 @@ package no.erik1988.playerbanks;
 import java.util.Calendar;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import no.erik1988.playerbanks.Main;
 
 public class Schedule{
-	private Main plugin;
-	public Schedule(Main plugin)
-	{
-		this.plugin = plugin;
-	}
+
 	/**
 	 * Schedules a task to run at a certain hour every day.
 	 * @param plugin The plugin associated with this task

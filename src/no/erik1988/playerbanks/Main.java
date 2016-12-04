@@ -18,7 +18,6 @@ import no.erik1988.playerbanks.sql.SQLite;
 import no.erik1988.playerbanks.commands.Pbank;
 import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
-import no.erik1988.playerbanks.PaginatedResult;
 
 public class Main extends JavaPlugin {
 	FileConfiguration config = getConfig();
@@ -27,14 +26,11 @@ public class Main extends JavaPlugin {
 	public LoanObject loanobject;
 	private Economy economy;
 	public LoginListener login; 
-	//public SingleThread st;
 	@Override
 	public void onEnable() {
-		//this.login = new LoginListener(this);
 		this.m = new MessageHandler(this);
 		this.sql = new SQLite(this);
 		this.loanobject = new LoanObject(this);
-		//this.st = new SingleThread(this);
 		Pbank pbank = new Pbank(this);
 		getCommand("pbank").setExecutor(pbank);
 		config.addDefault("interest.autocharge.enable", Boolean.valueOf(true));
@@ -52,7 +48,7 @@ public class Main extends JavaPlugin {
 		config.addDefault("cleanup.log.olderthan.hours", Integer.valueOf(720));
 		config.addDefault("cleanup.transactions.olderthan.hours", Integer.valueOf(720));
 		//config.addDefault("cleanup.removeInactive", Boolean.valueOf(false));
-		config.addDefault("bank.name.blacklist", new String[] { "server", "admin" });
+		config.addDefault("bank.name.blacklist", new String[] { "server", "admin", "bank" });
 		//config.addDefault("bank.allowmanagers", Boolean.valueOf(true));
 		config.addDefault("bank.banksPerPlayer", Integer.valueOf(3));
 		config.addDefault("loan.minBorrow.value", Integer.valueOf(50));
@@ -70,7 +66,6 @@ public class Main extends JavaPlugin {
 		config.addDefault("loan.maxBorrow.unlimited.perm.maxcontracts", "pbank.unlimited.maxcontract");
 		config.addDefault("loan.maxfee", Integer.valueOf(20));
 		config.addDefault("other.notifyOnLogin", Boolean.valueOf(true)); 
-		//config.addDefault("eco.checkforprovider", Boolean.valueOf(true));
 		config.options().copyDefaults(true);
 
 		saveConfig(); 
@@ -92,7 +87,6 @@ public class Main extends JavaPlugin {
 		Schedule.scheduleRepeatAtTime(this, new Runnable() {
 			@Override
 			public void run() {
-				//st.AutochargeAndInterestThreaded();
 				AutochargeAndInterest();
 			}
 		}, timeofday);
@@ -102,7 +96,6 @@ public class Main extends JavaPlugin {
 				@Override
 				public void run() {
 					cleanUp();
-					//st.cleanUpThreaded();
 				}
 			}, timeofdaycleanup);
 		}
@@ -111,8 +104,6 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		//st.closeexec();
-		//this.st = null;
 		this.m = null;
 		this.sql = null;
 		this.loanobject = null;
@@ -133,8 +124,6 @@ public class Main extends JavaPlugin {
 			LogHandler.severe("Vault not found!");
 			return false;
 		}
-		//boolean checkforprovider = config.getBoolean("eco.checkforprovider");
-		//if(checkforprovider){
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
 			LogHandler.severe("Economy provider not found!");
@@ -142,7 +131,6 @@ public class Main extends JavaPlugin {
 		}
 		economy = rsp.getProvider();
 		LogHandler.info("Vault and economy provider found!");
-		//}
 
 		return true;
 	}
@@ -232,7 +220,7 @@ public class Main extends JavaPlugin {
 		}
 
 	}
-
+	
 	public void SendMsgIfOnline(UUID UUID, String msg){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
 		if (player.isOnline()){
@@ -241,13 +229,12 @@ public class Main extends JavaPlugin {
 		}
 
 	}
+	//TODO: Looks like message is sendt twice.
 	public void ShowTransIfOnline(UUID UUID){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
 		if (player.isOnline()){
 			Player player2 = Bukkit.getPlayer(UUID);
-	    	if (sql.CheckIfNewTrans(player2)){
-	    		player2.sendMessage(getMessager().get("transactions.newtrans")); 
-	    	}
+	    	player2.sendMessage(getMessager().get("transactions.newtrans")); 
 		}
 
 	}

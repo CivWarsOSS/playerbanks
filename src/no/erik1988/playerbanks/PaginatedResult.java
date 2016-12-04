@@ -9,7 +9,6 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
-import no.erik1988.playerbanks.Main;
 
 public abstract class PaginatedResult<T> {
 

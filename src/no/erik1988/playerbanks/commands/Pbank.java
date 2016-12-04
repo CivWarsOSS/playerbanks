@@ -3,7 +3,6 @@ package no.erik1988.playerbanks.commands;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -68,6 +67,7 @@ implements CommandExecutor
 					return true;
 
 				}
+				//TODO: Allow capatalized bank names.
 				if(args[0].equalsIgnoreCase("makebank") || args[0].equalsIgnoreCase("mb")){
 					if (!s.hasPermission("pbank.makebank")) {
 						s.sendMessage("No Permissions");
@@ -153,6 +153,7 @@ implements CommandExecutor
 					}
 					p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.MakeBank"));
+					return false;
 				}
 				//pbank d BANK AMOUNT
 				if(args[0].equalsIgnoreCase("deposit")|| args[0].equalsIgnoreCase("d")){
@@ -214,6 +215,7 @@ implements CommandExecutor
 					p.sendMessage(this.plugin.getMessager().get("cmd.deposit"));
 					return false;
 				}
+				//TODO: if w more than the bank has, w the money that is there.
 				//pbank w BANK AMOUNT
 				if(args[0].equalsIgnoreCase("withdraw") || args[0].equalsIgnoreCase("w")){
 					if (!s.hasPermission("pbank.makebank")) {
@@ -245,9 +247,9 @@ implements CommandExecutor
 							return false;
 						}
 						int amount2 = Integer.parseInt(args[2]);
-						if (!plugin.sql.CheckMoneyBank(p, BankName,amount2)) {
-							p.sendMessage(plugin.getMessager().get("eco.NotEnougthMoney"));
-							return false;
+						int bankmoney = plugin.sql.GetMoneyBank(BankName);
+						if (bankmoney < amount2) {
+							amount2 = bankmoney;
 						}
 						Integer BankID = plugin.sql.GetBankID(BankName);
 						//plugin.st.WithdrawThreaded(p, BankID, amount2);
@@ -273,6 +275,7 @@ implements CommandExecutor
 					p.sendMessage(this.plugin.getMessager().get("cmd.withdraw"));
 					return false;
 				}
+				//TODO: FIX error with trans and log. They cause error or get inhereted by the next bank with the same id.
 				//pbank rem BANK
 				if(args[0].equalsIgnoreCase("rem") || args[0].equalsIgnoreCase("remove")){
 					if (!s.hasPermission("pbank.makebank")) {
@@ -305,6 +308,8 @@ implements CommandExecutor
 						}
 						plugin.sql.RemBank(BankID);
 						plugin.sql.RemAllLoansFromBank(BankID);
+						plugin.sql.RemTrans(BankID);
+						plugin.sql.RemLog(BankID);
 						LogHandler.info("Bank " + BankName + "was removed by " + p.getName().toString());
 						p.sendMessage(plugin.getMessager().get("Mybank.Remove.RemSuccess").replace("%bank%", BankName));
 						return true;
@@ -383,11 +388,9 @@ implements CommandExecutor
 						
 
 						String[] info = plugin.sql.GetBankInfo(BankName);
-						String owner = info[0];
+						//String owner = info[0];
 						int interestrate = Integer.parseInt(info[1]);
-						//int inviteonly = Integer.parseInt(info[2],0);
 						int value = Integer.parseInt(info[3]);
-						//double recivable = Integer.parseInt(info[4]);
 						int maxloan = Integer.parseInt(info[5]);
 						UUID owneruuid = UUID.fromString(info[6]);
 						int fee = Integer.parseInt(info[7]);
@@ -441,17 +444,15 @@ implements CommandExecutor
 						//OfflinePlayer Ownerplayer = Bukkit.getPlayer(owneruuid);
 						//Player Ownerplayer = (Player) Bukkit.getOfflinePlayer(owneruuid);
 						String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
-						String msg = plugin.getMessager().get("log.Request").replace("%money%", Integer.toString(amount2)).replace("%player%", p.getName().toString()).replace("%time%", timestamp).replace("%bank%", BankName);
-						//TODO: Check if log.request should be replaced.
+						String log = plugin.getMessager().get("log.Request").replace("%money%", Integer.toString(amount2)).replace("%player%", p.getName().toString()).replace("%time%", timestamp).replace("%bank%", BankName);
 
-						plugin.sql.AddLog(bankid, msg);
-
+						plugin.sql.AddLog(bankid, log);
 						
-						
+						//send owner and manager a notification that they have a new 
+						plugin.SendMsgIfOnline(owneruuid,plugin.getMessager().get("Mybank.Contracts.New"));
 						UUID managerUUID = plugin.sql.GetManagerUUID(BankName);
-						plugin.SendMsgIfOnline(owneruuid, msg);
 						if (managerUUID != null){
-							plugin.SendMsgIfOnline(managerUUID, msg);
+							plugin.SendMsgIfOnline(managerUUID,plugin.getMessager().get("Mybank.Contracts.New"));
 						}
 						return true;
 
@@ -512,7 +513,6 @@ implements CommandExecutor
 						UUID uuid = p.getUniqueId();
 						//plugin.st.MakeLogThreaded(logtype, code, amount2, p, bankid,1,uuid);
 						plugin.LogTransPre(logtype, code, amount2, p, bankid,1,uuid);
-						plugin.ShowTransIfOnline(uuid);
 						
 						p.sendMessage(plugin.getMessager().get("Loans.Downpayment").replace("%money%", Integer.toString(amount2)).replace("%id%", Integer.toString(code)));
 						
@@ -632,7 +632,7 @@ implements CommandExecutor
 						@Override
 						public String format(PageObject entry) {
 							return entry.getmsg();
-						}
+						} 
 					}.display(p, loglist, arg1);
 					return true;
 					
@@ -727,6 +727,16 @@ implements CommandExecutor
 							    String mname = managerplayer.getName();
 								plugin.sql.AddManager(managerplayer,BankName);
 								p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Added").replace("%player%", mname));
+								UUID manageruuid = managerplayer.getUniqueId();
+								//sends notification to manger 
+
+								String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
+								String msg = plugin.getMessager().get("Mybank.Manager.YouAreNowManager").replace("%bank%", BankName).replace("%time%", timestamp);
+
+								plugin.sql.AddMSG(managerplayer, msg, manageruuid);
+								plugin.ShowMsgIfOnline(manageruuid);
+								
+								
 								return true;
 							}
 
@@ -743,7 +753,6 @@ implements CommandExecutor
 						
 
 					}
-					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Manager"));
 					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.CanDo"));
 					p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.CanNotDo"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.managers"));
@@ -827,7 +836,6 @@ implements CommandExecutor
 								//plugin.st.AddMSGThreaded(borrowerplayer, msg,borroweruuid);
 								plugin.sql.AddMSG(borrowerplayer, msg,borroweruuid);
 								plugin.ShowMsgIfOnline(borroweruuid);
-								plugin.ShowTransIfOnline(borroweruuid);
 								
 								String log = plugin.getMessager().get("borrow.Approved").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName()).replace("%time%", timestamp);
 								plugin.sql.AddLog(bankid, log);
@@ -1092,7 +1100,7 @@ implements CommandExecutor
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.Head").replace("%loanid%", Integer.toString(loanid)).replace("%borrower%", borrower));
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line1").replace("%bank%", nameofbank).replace("%interestrate%", interestrateAsString));
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line2").replace("%borrowed%", Integer.toString(borrowed)).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee)));
-						p.sendMessage(plugin.getMessager().get("Mybank.Report.line3").replace("%payments%", Integer.toString(payments)).replace("%profit%", Integer.toString(profit)));
+						p.sendMessage(plugin.getMessager().get("Mybank.Report.line3").replace("%payment%", Integer.toString(payments)).replace("%profit%", Integer.toString(profit)));
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line4").replace("%requested%", requestdateFormat));
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line5").replace("%approved%", activateddateFormat).replace("%manager%", manager));
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line6").replace("%downpayed%", downpayeddateFormat));

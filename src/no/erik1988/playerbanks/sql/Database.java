@@ -72,11 +72,9 @@ public abstract class Database {
                 	String bankname = rs.getString("nameofbank");
                 	int interestrate = rs.getInt("interestrate");
                 	int value = rs.getInt("value");
-                	//int receivables = rs.getDouble("receivables");
                 	int maxloan = rs.getInt("maxloan");
                 	int fee = rs.getInt("fee");
                 	String valueasstirng = Integer.toString(value);
-                	//String receivablesasstirng = Double.toString(receivables);
                 	String maxloanasstirng = Integer.toString(maxloan);
                 	String interestrateAsString = "0%";
                 	if(interestrate == 1){
@@ -189,7 +187,6 @@ public abstract class Database {
                 	else if(interestrate == 3){
                 		interestrateAsString = c.getString("interest.high")+ "%";
                 	}
-                	//player.sendMessage(plugin.getMessager().get("Banks.Bank.List").replace("%owner%", owner).replace("%bank%", bankname).replace("%value%", valueasstirng).replace("%receivables%", receivablesasstirng).replace("%maxloan%", maxloanasstirng).replace("%interest%", interestrateAsString));
                 	player.sendMessage(plugin.getMessager().get("Banks.Info.Name").replace("%owner%", owner).replace("%bank%", bankname));
                 	player.sendMessage(plugin.getMessager().get("Banks.Info.Value").replace("%value%", Integer.toString(value)).replace("%receivables%", receivablesasstirng));
                 	player.sendMessage(plugin.getMessager().get("Banks.Info.Interest").replace("%maxloan%", Integer.toString(maxloan)).replace("%interest%", interestrateAsString));
@@ -1049,6 +1046,50 @@ public abstract class Database {
         }
         return;             
     }
+    public void RemTrans(int bankid) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+
+            ps = conn.prepareStatement("DELETE FROM " + transactions + " WHERE bankid = '"+ bankid + "'" );
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;             
+    }
+    public void RemLog(int bankid) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+
+            ps = conn.prepareStatement("DELETE FROM " + logtable + " WHERE bankid = '"+ bankid + "'" );
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;             
+    }
     public void CleanUpMSG() {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -1561,24 +1602,20 @@ public abstract class Database {
         }
         return exsist;             
     }
-    public boolean CheckMoneyBank(Player player,String bankname, int ammount) {
+    //TODO: Could be replaced. 
+    public int GetMoneyBank(String bankname) {
     	bankname = bankname.toLowerCase(); 
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        boolean money= false; 
+        int sqlmoney = 0;
         try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT value FROM " + banks + " WHERE nameofbank = ? ;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
             rs.next();
-        	int sqlmoney = rs.getInt("value"); 
-            	if(ammount <= sqlmoney){
-            		money = true;
-            	}else{
-            		money = false;
-            	}
+        	sqlmoney = rs.getInt("value"); 
             
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -1592,7 +1629,7 @@ public abstract class Database {
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
         }
-        return money;             
+        return sqlmoney;             
     }
     public boolean CheckMoneyBankEmpty(String bankname) {
     	bankname = bankname.toLowerCase(); 

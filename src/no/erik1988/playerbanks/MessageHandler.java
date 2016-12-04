@@ -96,7 +96,7 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Bank.Created", "&7Bank &3%bank% &7has been created.");
 		this.config.addDefault("Mybank.Bank.Header", "&eBANK &6VALUE &eMAXLOAN &6FEE");
 		this.config.addDefault("Mybank.Bank.List", "&7 &9%bank%&7(%interest%) &2%value% &7%maxloan% %fee%");
-		this.config.addDefault("Mybank.Bank.Null", "&8[!]&7 You don't own any banks");
+		this.config.addDefault("Mybank.Bank.Null", "&8[!]&7 You do not own any banks");
 		
 		this.config.addDefault("Status.Pending", "&ePending");
 		this.config.addDefault("Status.Active", "&2Active");
@@ -123,8 +123,8 @@ public class MessageHandler {
 		this.config.addDefault("desc.Borrow", "&7You can see a list of banks by typing &3/pbank list");
 		this.config.addDefault("desc.RemBank", "&7This will permanently delete your Bank.");
 		this.config.addDefault("desc.Manager", "&7You can assign a manager to help you out with your bank.");
-		this.config.addDefault("desc.Trans", "&7You can also use &3/pbank trans &7to see different types of information.");
-		this.config.addDefault("desc.Log", "&7You can also use &3/pbank log &7to see different types of information.");
+		this.config.addDefault("desc.Trans", "&7You can also use &3/pbank trans BANK &7to see different types of information.");
+		this.config.addDefault("desc.Log", "&7You can also use &3/pbank log BANK&7to see different types of information.");
 		
 		this.config.addDefault("info.bankinfo", "&7 Use &3/pbank info BANK &7to see more information.");
 		
@@ -163,16 +163,16 @@ public class MessageHandler {
 		this.config.addDefault("MakeBank.minborrow", "&8[!]&c Your maxloan can not be lower than the minimum loan (&3%minborrow%&7)");
 		
 		this.config.addDefault("cmd.BankDoesNotExsist", "&8[!]&c The Bank does not exist, make sure you wrote the right name.");
-		this.config.addDefault("cmd.YouDontOwnThisBank", "&8[!]&c You don't own this bank.");
+		this.config.addDefault("cmd.YouDontOwnThisBank", "&8[!]&c You do not own this bank.");
 		this.config.addDefault("cmd.YouCannotManage", "&8[!]&c You are not allowed to manage this Bank");
 		
-		this.config.addDefault("eco.NotEnougthMoney", "&8[!]&c You don't have that much money");
+		this.config.addDefault("eco.NotEnougthMoney", "&8[!]&c You do not have that much money");
 		this.config.addDefault("eco.AccNotExisting", "&8[!]&c This player account does not exist");
 		this.config.addDefault("eco.TransferedFromBank", "&3%money% &7has been transferred from the bank to your account."); 
 		this.config.addDefault("eco.TransferedToBank", "&3%money% &7has been transferred from your account to the bank.");
 		
 		this.config.addDefault("borrow.YouOwnThisBank", "&8[!]&c You cannot borrow from a bank you own or manage.");
-		this.config.addDefault("borrow.RequestSendt", "&7You have sent &5%bank% &7a request to borrow &3%money%.");
+		this.config.addDefault("borrow.RequestSendt", "&7You have sent bank &5%bank% &7a request to borrow &3%money%.");
 		
 		this.config.addDefault("borrow.Approved", "&7%time% - &5%player% &2has approved your loan of &3%money%.");
 		this.config.addDefault("borrow.Denied", "&7%time% - &5%player% &chas denied your loan of &3%money%.");
@@ -206,7 +206,7 @@ public class MessageHandler {
 		this.config.addDefault("borrow.AlreadyLoan", "&8[!]&c You already have a loan or request for this bank."); 
 		this.config.addDefault("borrow.Loans.Header", "&eID &6BANK &eLOAN &6OWNER &eSTATUS");
 		this.config.addDefault("borrow.Loans.List", "&7 &9%code% &3%bank%&7(%interest%) &3%req% &5%owner% %status%");
-		this.config.addDefault("borrow.Loans.Null", "&8[!]&7 You don't have any loans yet.");
+		this.config.addDefault("borrow.Loans.Null", "&8[!]&7 You do not have any loans yet.");
 		
 		
 		this.config.addDefault("Mybank.Contracts.Acitvated", "&7Contract &3%contract% &7has been activated");
@@ -215,15 +215,16 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Contracts.NotEnougthMoney", "&8[!]&c The bank does not have enough money for this contract.");
 		this.config.addDefault("Mybank.Contracts.Header", "&eID &6BANK &eLOAN &6PLAYER &eSTATUS");
 		this.config.addDefault("Mybank.Contracts.List", "&7 &9%code% &3%bank%&7(%interest%) &3%req% &5%player% %status%");
-		this.config.addDefault("Mybank.Contracts.Null", "&7 You dont have any contracts.");
+		this.config.addDefault("Mybank.Contracts.Null", "&7You do not have any contracts.");
 		this.config.addDefault("Mybank.Contracts.DelIsActive", "&cThe contract you are trying to delete is active. \n &c If you delete this contact the borrower will be pardoned (you dont get your money). \n &c If you want to proceed you can type &3/pbank c del %id% -f");
 		this.config.addDefault("Mybank.Contracts.DelSuccess", "&2You deleted contract &3%id%");
 		this.config.addDefault("Mybank.Contracts.Finished", "&2%time% - &5%borrower%'s &7loan of &3%amount% &7(+ &3%interest% &7interest and + &3%fee% &7fee) \n &7was payed down (&3%bank%&7).");
 		
-		this.config.addDefault("Mybank.Contracts.Pending", "&7You have %count% pending contract(s). &3/pbank c"); 
+		this.config.addDefault("Mybank.Contracts.Pending", "&7You have &3%count% &7pending contract(s). &3/pbank c"); 
+		this.config.addDefault("Mybank.Contracts.New", "&7You have a new contract pending. &3/pbank c"); 
 		
-		this.config.addDefault("Mybank.Remove.NotEmpty", "&cYour bank still have money on it, withdraw it before removing the account.");
-		this.config.addDefault("Mybank.Remove.HasActiveLoans", "&cYour bank still has active loans, delete them before removing the bank.");
+		this.config.addDefault("Mybank.Remove.NotEmpty", "&cYour bank still has money in it, withdraw it before removing the account.&3/pbank w BANK AMOUNT");
+		this.config.addDefault("Mybank.Remove.HasActiveLoans", "&cYour bank still has active contracts, delete them before removing the bank.");
 		this.config.addDefault("Mybank.Remove.RemSuccess", "&2You removed bank &3%bank%");
 		
 		this.config.addDefault("Mybank.Report.Head", "&2##REPORT FOR LOANID: &3%loanid% &2- &5%borrower%&2##");
@@ -236,7 +237,7 @@ public class MessageHandler {
 		
 		this.config.addDefault("Mybank.ReportList.Header", "&eID &6BANK &eBORROWER &6DATE");  
 		this.config.addDefault("Mybank.ReportList.List", "&9%loanid% &7%bank% &5%borrower% &7%date%");
-		this.config.addDefault("Mybank.ReportList.Null", "&7 There is no reports yet.");
+		this.config.addDefault("Mybank.ReportList.Null", "&7You do not have any reports yet.");
 		
 		this.config.addDefault("Mybank.Report.CantfindReport", "&8[!]&cCannot find a report on loan with this id.");
 		this.config.addDefault("Mybank.Report.NewReport", "&2You have a new report available. Type &3/pbank rep %loanid%");
@@ -251,7 +252,9 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Manager.CanDo", "&eA manager &2CAN&e:&7 \n - App/Del requests \n - Read transactions,log and reports \n - Deposit money");
 		this.config.addDefault("Mybank.Manager.CanNotDo", "&eA manager &cCANNOT&e:&7 \n - Disband the Bank \n - Pardon loans \n - Have/request loans in the Bank \n - Withdraw money");
 		
-		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 You don't have a loan with that ID");
+		this.config.addDefault("Mybank.Manager.YouAreNowManager", "&7%time% - &2You have been assigned as a manager for bank %bank%.");
+		
+		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 You do not have a loan with that ID");
 		this.config.addDefault("Loans.Downpayment", "&7You have down paid &3%money% &7on your loan(&9%id%&7)");
 		this.config.addDefault("Loans.Del.IsActive", "&cYou cannot delete active contracts."); 
 		
