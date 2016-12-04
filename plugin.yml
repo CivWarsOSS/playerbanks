@@ -3,6 +3,7 @@ name: PlayerBanks
 version: 0.2
 author: Erik1988
 description: It allows players to create banks with interest rate to lend out to other players.
+softdepend: [SaneEconomy]
 commands:
   pbank:
     description: Main command pbank. 

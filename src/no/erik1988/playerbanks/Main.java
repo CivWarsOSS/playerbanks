@@ -69,10 +69,11 @@ public class Main extends JavaPlugin {
 		config.addDefault("loan.maxBorrow.unlimited.perm.value", "pbank.unlimited.value");
 		config.addDefault("loan.maxBorrow.unlimited.perm.maxcontracts", "pbank.unlimited.maxcontract");
 		config.addDefault("loan.maxfee", Integer.valueOf(20));
-		config.addDefault("other.notifyOnLogin", Boolean.valueOf(true));
+		config.addDefault("other.notifyOnLogin", Boolean.valueOf(true)); 
+		//config.addDefault("eco.checkforprovider", Boolean.valueOf(true));
 		config.options().copyDefaults(true);
 
-		saveConfig();
+		saveConfig(); 
 		reloadConfig();
 		
 		if (!pluginChecks()) {
@@ -132,6 +133,8 @@ public class Main extends JavaPlugin {
 			LogHandler.severe("Vault not found!");
 			return false;
 		}
+		//boolean checkforprovider = config.getBoolean("eco.checkforprovider");
+		//if(checkforprovider){
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
 			LogHandler.severe("Economy provider not found!");
@@ -139,7 +142,7 @@ public class Main extends JavaPlugin {
 		}
 		economy = rsp.getProvider();
 		LogHandler.info("Vault and economy provider found!");
-
+		//}
 
 		return true;
 	}
