@@ -215,7 +215,6 @@ implements CommandExecutor
 					p.sendMessage(this.plugin.getMessager().get("cmd.deposit"));
 					return false;
 				}
-				//TODO: if w more than the bank has, w the money that is there.
 				//pbank w BANK AMOUNT
 				if(args[0].equalsIgnoreCase("withdraw") || args[0].equalsIgnoreCase("w")){
 					if (!s.hasPermission("pbank.makebank")) {
@@ -275,7 +274,6 @@ implements CommandExecutor
 					p.sendMessage(this.plugin.getMessager().get("cmd.withdraw"));
 					return false;
 				}
-				//TODO: FIX error with trans and log. They cause error or get inhereted by the next bank with the same id.
 				//pbank rem BANK
 				if(args[0].equalsIgnoreCase("rem") || args[0].equalsIgnoreCase("remove")){
 					if (!s.hasPermission("pbank.makebank")) {
@@ -1106,7 +1104,7 @@ implements CommandExecutor
 						p.sendMessage(plugin.getMessager().get("Mybank.Report.line6").replace("%downpayed%", downpayeddateFormat));
 						p.sendMessage(plugin.getMessager().get("Main.Divider"));
 						return true;
-						}
+						} 
 						p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 						return false;
 					}
