@@ -75,8 +75,8 @@ implements CommandExecutor
 						return false;
 					}
 					if (args.length == 5) {
-						String arg1 = args[1].replaceAll("[^a-zA-Z0-9]", "");
-						String BankName = arg1.toLowerCase();
+						String BankName = args[1].replaceAll("[^a-zA-Z0-9]", "");
+						//String BankName = arg1.toLowerCase();
 						if ((BankName.length() > 15 || BankName.length() < 3)){
 							p.sendMessage(this.plugin.getMessager().get("cmd.NameLength"));
 							return false;
@@ -101,8 +101,8 @@ implements CommandExecutor
 							p.sendMessage(this.plugin.getMessager().get("MakeBank.maxfee").replace("%nr%", Integer.toString(maxfee)));
 							return false;
 						}
-
-						if (isBlackListed(arg1)) {
+ 
+						if (isBlackListed(BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.BlackList"));
 							return false;
 						}
@@ -578,7 +578,8 @@ implements CommandExecutor
 				//pbank trans [bank] [page]
 				if(args[0].equalsIgnoreCase("transactions") || args[0].equalsIgnoreCase("trans")){
 					if (args.length >= 2 && !isInt(args[1])) {
-						String BankName = args[1].toLowerCase(); 
+						String BankName = args[1];
+						BankName = BankName.substring(0, 1).toUpperCase() + BankName.substring(1).toLowerCase();
 						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
 							return false;
@@ -639,6 +640,7 @@ implements CommandExecutor
 				if(args[0].equalsIgnoreCase("log")){
 					if (args.length >= 2) {
 						String BankName = args[1].toLowerCase(); 
+						BankName = BankName.substring(0, 1).toUpperCase() + BankName.substring(1).toLowerCase();
 						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
 							return false;
@@ -1151,6 +1153,7 @@ implements CommandExecutor
 						int maxloan = Integer.parseInt(info[5]);
 						//UUID owneruuid = UUID.fromString(info[6]);
 						int fee = Integer.parseInt(info[7]);
+						String nameofbank = info[9];
 						String receivablesasstirng = Integer.toString(receivables);
 						String interestrateAsString = "0%";
 						if(interestrate == 1){
@@ -1167,7 +1170,7 @@ implements CommandExecutor
 							manager = "-";
 						}
 						p.sendMessage(plugin.getMessager().get("Main.Divider")); 
-						p.sendMessage(plugin.getMessager().get("Banks.Info.Name").replace("%bank%", BankName));
+						p.sendMessage(plugin.getMessager().get("Banks.Info.Name").replace("%bank%", nameofbank));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Management").replace("%owner%", owner).replace("%manager%", manager));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Value").replace("%value%", Integer.toString(value)).replace("%receivables%", receivablesasstirng));
 						p.sendMessage(plugin.getMessager().get("Banks.Info.Interest").replace("%maxloan%", Integer.toString(maxloan)).replace("%interest%", interestrateAsString));

@@ -162,7 +162,7 @@ public abstract class Database {
         FileConfiguration c = plugin.getConfig();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM " + banks + " WHERE nameofbank = ? ");
+            ps = conn.prepareStatement("SELECT * FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ");
             ps.setString(1, Bank);
             rs = ps.executeQuery();
             while(rs.next()){
@@ -1330,14 +1330,13 @@ public abstract class Database {
         return;             
     }
     public boolean CheckIfBankNameExsist(String bankname) {
-    	bankname = bankname.toLowerCase(); 
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         boolean exsist= false; 
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT nameofbank FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT nameofbank FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
             	if(rs.next()){
@@ -1373,7 +1372,7 @@ public abstract class Database {
 			"FROM pbank_loans as loans " +
 			"LEFT JOIN pbank_banks as banks " +
 			"ON banks.id = loans.bankid " + 
-			"WHERE banks.nameofbank = ? " +
+			"WHERE UPPER(banks.nameofbank) = UPPER(?) " +
 			"AND loans.borrower = '" + myuuid + "' AND loans.active IS NOT 3;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
@@ -1611,7 +1610,7 @@ public abstract class Database {
         int sqlmoney = 0;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT value FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT value FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
             rs.next();
@@ -1639,7 +1638,8 @@ public abstract class Database {
         boolean money= false; 
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT value FROM " + banks + " WHERE nameofbank = '"+bankname+"' ;");
+            ps = conn.prepareStatement("SELECT value FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
+            ps.setString(1, bankname);
             rs = ps.executeQuery();
             rs.next();
         	int sqlmoney = rs.getInt("value"); 
@@ -1752,7 +1752,7 @@ public abstract class Database {
         boolean isowner = false;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT owner FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT owner FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, BankName);
             rs = ps.executeQuery();
         	rs.next();
@@ -1783,7 +1783,7 @@ public abstract class Database {
         boolean ismanager = false;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, BankName);
             rs = ps.executeQuery();
         	rs.next();
@@ -1812,7 +1812,8 @@ public abstract class Database {
         String info[] = new String[10];
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM " + banks + " WHERE nameofbank = '"+BankName+"' ;");
+            ps = conn.prepareStatement("SELECT * FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
+            ps.setString(1, BankName);
             rs = ps.executeQuery();
         	rs.next();
         	String uuid = rs.getString("owner");
@@ -1829,6 +1830,7 @@ public abstract class Database {
         	info[6] = uuid;
         	info[7] = rs.getString("fee");
         	info[8] = Integer.toString(bankid);
+        	info[9] = rs.getString("nameofbank");
 
     		if(manuuid != null){
     			UUID uuid3 = UUID.fromString(manuuid);
@@ -1930,7 +1932,8 @@ public abstract class Database {
         Integer BankID = 0;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT id FROM " + banks + " WHERE nameofbank = '"+BankName+"' ;");
+            ps = conn.prepareStatement("SELECT id FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
+            ps.setString(1, BankName);
             rs = ps.executeQuery();
         	rs.next();
         	BankID = rs.getInt("id"); 
@@ -1982,7 +1985,7 @@ public abstract class Database {
         String manageruuid = manager.getUniqueId().toString();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE " + banks + " SET manager = ? WHERE nameofbank = ? ;"); 
+            ps = conn.prepareStatement("UPDATE " + banks + " SET manager = ? WHERE UPPER(nameofbank) = UPPER(?) ;"); 
             ps.setString(1, manageruuid);
             ps.setString(2, bankname);
             ps.executeUpdate();
@@ -2010,7 +2013,7 @@ public abstract class Database {
         String managername = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
         	rs.next();
@@ -2043,7 +2046,7 @@ public abstract class Database {
         UUID uuid = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE nameofbank = ? ;");
+            ps = conn.prepareStatement("SELECT manager FROM " + banks + " WHERE UPPER(nameofbank) = UPPER(?) ;");
             ps.setString(1, bankname);
             rs = ps.executeQuery();
         	rs.next();
@@ -2073,7 +2076,7 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE " + banks + " SET manager = '' WHERE nameofbank = ? ;"); 
+            ps = conn.prepareStatement("UPDATE " + banks + " SET manager = '' WHERE UPPER(nameofbank) = UPPER(?) ;"); 
             ps.setString(1, bankname);
             ps.executeUpdate();
 
