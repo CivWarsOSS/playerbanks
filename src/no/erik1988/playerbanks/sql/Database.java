@@ -395,8 +395,8 @@ abstract class Database {
 				UUID buuid2 = UUID.fromString(buuid);
 				String borrower = Bukkit.getOfflinePlayer(buuid2).getName();
 				int amount = rs.getInt("total");
-				amount = Math.round(amount * 100);
-				amount = amount/100;
+				//amount = Math.round(amount * 100);
+				//amount = amount/100;
 				String status2 = c.getString("Status.Pending","§ePending");
 				if (status == 1){
 					status2 = c.getString("Status.Active","§2Active");
@@ -826,8 +826,8 @@ abstract class Database {
 				UUID ouuid2 = UUID.fromString(ouuid);
 				String owner = Bukkit.getOfflinePlayer(ouuid2).getName();
 				int amount = rs.getInt("total");
-				amount = Math.round(amount * 100);
-				amount = amount/100;
+				//amount = Math.round(amount * 100);
+				//amount = amount/100;
 				String amountasstirng = Integer.toString(amount);
 				String status2 = "§ePending";
 				if (status == 1){
