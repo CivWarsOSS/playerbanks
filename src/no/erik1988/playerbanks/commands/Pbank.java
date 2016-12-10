@@ -67,7 +67,6 @@ implements CommandExecutor
 					return true;
 
 				}
-				//TODO: Allow capatalized bank names.
 				if(args[0].equalsIgnoreCase("makebank") || args[0].equalsIgnoreCase("mb")){
 					if (!s.hasPermission("pbank.makebank")) {
 						s.sendMessage("No Permissions");
