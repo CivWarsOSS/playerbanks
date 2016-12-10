@@ -15,7 +15,7 @@ import no.erik1988.playerbanks.LogHandler;
 import no.erik1988.playerbanks.Main;
 
 public class LoanObject {
-	Main plugin;
+	private Main plugin;
 	private int bankid;
 	private int loanid;
 	private int fee;

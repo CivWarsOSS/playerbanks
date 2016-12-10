@@ -13,13 +13,13 @@ import no.erik1988.playerbanks.Main; // import your main class
 
 
 public class SQLite extends Database{
-    String dbname;
+    private String dbname;
     public SQLite(Main instance){
         super(instance);
         dbname = "pbank"; // Set the table name here e.g player_kills
     }
 
-    public String SQLiteCreateBanksTable = "CREATE TABLE IF NOT EXISTS pbank_banks (" + // make sure to put your table name in here too.
+    private String SQLiteCreateBanksTable = "CREATE TABLE IF NOT EXISTS pbank_banks (" + // make sure to put your table name in here too.
     		"`id` INTEGER," +
             "`nameofbank` varchar(32) NOT NULL," +
     		"`owner` varchar(36) NOT NULL," +
@@ -32,7 +32,7 @@ public class SQLite extends Database{
             "`timestamp` INTEGER NOT NULL," +
             "PRIMARY KEY (`id`)" +  
             ");";
-    public String SQLiteCreateLoansTable = "CREATE TABLE IF NOT EXISTS pbank_loans (" + 
+    private String SQLiteCreateLoansTable = "CREATE TABLE IF NOT EXISTS pbank_loans (" + 
     		"`id` INTEGER," +
             "`bankid` INTEGER NOT NULL," +
     		"`borrower` varchar(36) NOT NULL," +
@@ -48,7 +48,7 @@ public class SQLite extends Database{
             "`approvedby` varchar(36)," +
             "PRIMARY KEY (`id`)" +  
             ");";
-    public String SQLiteCreatePaymentsTable = "CREATE TABLE IF NOT EXISTS pbank_transactions (" + 
+    private String SQLiteCreatePaymentsTable = "CREATE TABLE IF NOT EXISTS pbank_transactions (" + 
     		"`id` INTEGER," +
     		"`type` int(1) NOT NULL," +
     		"`contract` INTEGER DEFAULT 0," +
@@ -59,7 +59,7 @@ public class SQLite extends Database{
     		"`seen` int(1) NOT NULL DEFAULT 0," +
             "PRIMARY KEY (`id`)" +  
             ");";
-    public String SQLiteCreateMSGTable = "CREATE TABLE IF NOT EXISTS pbank_msg (" + 
+    private String SQLiteCreateMSGTable = "CREATE TABLE IF NOT EXISTS pbank_msg (" + 
     		"`id` INTEGER," +
     		"`playeruuid` varchar(36) NOT NULL," +
     		"`msg` TEXT NOT NULL," +
@@ -67,7 +67,7 @@ public class SQLite extends Database{
     		"`seen` int(1) NOT NULL DEFAULT 0," +
             "PRIMARY KEY (`id`)" +  
             ");";
-    public String SQLiteCreateLogTable = "CREATE TABLE IF NOT EXISTS pbank_log (" + 
+    private String SQLiteCreateLogTable = "CREATE TABLE IF NOT EXISTS pbank_log (" + 
     		"`id` INTEGER," +
     		"`bankid` INTEGER NOT NULL," +
     		"`log` TEXT NOT NULL," +

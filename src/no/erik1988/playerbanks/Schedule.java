@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 
 import no.erik1988.playerbanks.Main;
 
-public class Schedule{
+class Schedule{
 
 	/**
 	 * Schedules a task to run at a certain hour every day.
@@ -16,7 +16,7 @@ public class Schedule{
 	 * @return Task id number (-1 if scheduling failed)
 	 * Author: Courier (https://bukkit.org/threads/performing-actions-at-specific-times.103357/)
 	 */
-	public static int scheduleRepeatAtTime(Main plugin, Runnable task, int hour)
+	static int scheduleRepeatAtTime(Main plugin, Runnable task, int hour)
 	{
 	    //Calendar is a class that represents a certain time and date.
 	    Calendar cal = Calendar.getInstance(); //obtains a calendar instance that represents the current time and date

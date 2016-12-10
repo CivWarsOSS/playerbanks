@@ -20,12 +20,12 @@ import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
 
 public class Main extends JavaPlugin {
-	FileConfiguration config = getConfig();
+	private FileConfiguration config = getConfig();
 	private MessageHandler m;
 	public SQLite sql;
-	public LoanObject loanobject;
+	private LoanObject loanobject;
 	private Economy economy;
-	public LoginListener login; 
+
 	@Override
 	public void onEnable() {
 		this.m = new MessageHandler(this);
@@ -70,7 +70,7 @@ public class Main extends JavaPlugin {
 
 		saveConfig(); 
 		reloadConfig();
-		
+
 		if (!pluginChecks()) {
 			LogHandler.severe("Disabling PlayerBanks.");
 			getServer().getPluginManager().disablePlugin(this);
@@ -107,7 +107,7 @@ public class Main extends JavaPlugin {
 		this.m = null;
 		this.sql = null;
 		this.loanobject = null;
-		
+
 	}
 	public MessageHandler getMessager() 
 	{
@@ -117,7 +117,7 @@ public class Main extends JavaPlugin {
 	{
 		return this.economy;
 	}
-	public boolean pluginChecks()
+	private boolean pluginChecks()
 	{
 
 		if (getServer().getPluginManager().getPlugin("Vault") == null){
@@ -156,7 +156,7 @@ public class Main extends JavaPlugin {
 				LogHandler.info("Removed log entries older than "+lhours+" hours.");
 			}
 		} 
-		
+
 
 	}
 	public void CheckifLoanIsPayed(int loanid){
@@ -165,16 +165,8 @@ public class Main extends JavaPlugin {
 			FinishLoan(loanid);
 		}
 	}
-	public void CheckifLoanIsPayedAsync2(int loanid){
-		Bukkit.getScheduler().runTaskAsynchronously(this, new Runnable() {
-    		@Override
-    		public void run() {
-    			CheckifLoanIsPayed(loanid);
-    		}
-    		
-    	});
-    }
-	public void FinishLoan(int loanid){
+
+	private void FinishLoan(int loanid){
 		String[] info = sql.GetLoanInfo(loanid);
 		int bankid = Integer.parseInt(info[11]);
 		int interest = Integer.parseInt(info[2]);
@@ -182,7 +174,7 @@ public class Main extends JavaPlugin {
 		//int payments = Integer.parseInt(info[4]);
 		String nameofbank = info[12];
 		String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
-		
+
 		UUID borroweruuid = UUID.fromString(info[8]);
 		UUID owneruuid = UUID.fromString(info[13]);
 		int fee = Integer.parseInt(info[9]);
@@ -192,23 +184,23 @@ public class Main extends JavaPlugin {
 
 		sql.MarkContractPayed(loanid);
 		LogHandler.info("loanid "+loanid+" is paid down");
-		
+
 		String newreport = getMessager().get("Mybank.Report.NewReport").replace("%loanid%", Integer.toString(loanid));
-		
+
 		String msgowner = getMessager().get("Mybank.Contracts.Finished").replace("%amount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));
 
 		sql.AddMSG(ownerplayer, newreport, owneruuid);
 		sql.AddMSG(ownerplayer, msgowner, owneruuid);
-		
+
 		String msgborrower = getMessager().get("borrow.Finished").replace("%amount%", Integer.toString(borrowed)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee));	
 		sql.AddMSG(borrowerplayer, msgborrower, borroweruuid);
-		
+
 		String log = getMessager().get("log.Finished").replace("%loanid%", Integer.toString(loanid)).replace("%time%", timestamp).replace("%bank%", nameofbank).replace("%borrower%", borrowerplayername).replace("%amount%", Integer.toString(borrowed));
 		sql.AddLog(bankid, log);
 
 		ShowMsgIfOnline(borroweruuid);
 		ShowMsgIfOnline(owneruuid);
-	
+
 	}
 	public void ShowMsgIfOnline(UUID UUID){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
@@ -220,7 +212,7 @@ public class Main extends JavaPlugin {
 		}
 
 	}
-	
+
 	public void SendMsgIfOnline(UUID UUID, String msg){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
 		if (player.isOnline()){
@@ -229,12 +221,11 @@ public class Main extends JavaPlugin {
 		}
 
 	}
-	//TODO: Looks like message is sendt twice.
-	public void ShowTransIfOnline(UUID UUID){
+	private void ShowTransIfOnline(UUID UUID){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
 		if (player.isOnline()){
 			Player player2 = Bukkit.getPlayer(UUID);
-	    	player2.sendMessage(getMessager().get("transactions.newtrans")); 
+			player2.sendMessage(getMessager().get("transactions.newtrans")); 
 		}
 
 	}

@@ -2,8 +2,6 @@
 */
 package no.erik1988.playerbanks;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -15,16 +13,11 @@ public abstract class PaginatedResult<T> {
     private final String header;
     private final String footer;
 
-    protected static final int PER_PAGE = 9;
+    private static final int PER_PAGE = 9;
     
     public PaginatedResult(String header, String footer) {
         this.header = header;
         this.footer = footer;
-    }
-
-    
-    public void display(CommandSender sender, Collection<? extends T> results, int page) throws CommandException {
-        display(sender, new ArrayList<T>(results), page);
     }
     
     public void display(CommandSender sender, List<? extends T> results, int page) throws CommandException {

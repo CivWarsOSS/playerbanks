@@ -11,8 +11,9 @@ public final class LoginListener implements Listener {
 	public LoginListener(Main plugin) {
 		this.plugin = plugin;
 	}
-	Main plugin;
+	private Main plugin;
     @EventHandler
+    @SuppressWarnings("ucd")
     public void normalLogin(PlayerJoinEvent  event) {
     	Player player = event.getPlayer();
     	
