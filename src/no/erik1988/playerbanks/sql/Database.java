@@ -762,7 +762,6 @@ abstract class Database {
 		}
 		return;             
 	}
-	//TODO: Check if it should be removed.
 	public void MarkTransAsSeen(Player player) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -774,11 +773,9 @@ abstract class Database {
 			//long timestamp = System.currentTimeMillis();
 
 			ps = conn.prepareStatement("UPDATE pbank_transactions SET seen = 1 " +
-					"where playeruuid = '" + myuuid + "' AND seen = 0 ");
+					"where (playeruuid = '" + myuuid + "' AND seen = 0) ");
 			ps.executeUpdate();
-
-
-
+			
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
 		} finally {

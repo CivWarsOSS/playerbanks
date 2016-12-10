@@ -188,6 +188,8 @@ public class MessageHandler {
 		this.config.addDefault("log.Pardoned", "&7%time% - &5%player% &ahas pardoned &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Finished", "&7%time% - &2Loan of &3%amount% &2from &5%borrower%& &2has been payed down.");
 		this.config.addDefault("log.null", "&7There is no log to display.");
+		this.config.addDefault("log.NewManager", "&7%time% - &5%player% &7was added as a manager by &5%owner%.");
+		this.config.addDefault("log.ClearManager", "&7%time% - &5%owner% &7removed the manager.");
 		
 		this.config.addDefault("transactions.newtrans", "&7You have unread transactions, &7type &3/pbank trans &7to see them.");
 		this.config.addDefault("transactions.deposit", "&7%time% - &5%player% &7deposited &3%amount% &7to bank &3%bank%");
@@ -240,26 +242,26 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.ReportList.Null", "&7You do not have any reports yet.");
 		
 		this.config.addDefault("Mybank.Report.CantfindReport", "&8[!]&cCannot find a report on loan with this id.");
-		this.config.addDefault("Mybank.Report.NewReport", "&2You have a new report available. Type &3/pbank rep %loanid%");
+		this.config.addDefault("Mybank.Report.NewReport", "&2You have a new report available. Type &3/pbank rep read %loanid%");
 		
 		this.config.addDefault("Mybank.Manager.NotYourself", "&8[!]&cYou cannot assign yourself as a manager");
 		this.config.addDefault("Mybank.Manager.UnknownPlayer", "&8[!]&cUnknown player. Make sure the player has been online and typed correct.");
 		this.config.addDefault("Mybank.Manager.PlayerHasLoan", "&8[!]&cPlayer has contract/request in your bank. Remove the loans before making the player a manager.");
-		this.config.addDefault("Mybank.Manager.NoManager", "&8[!]&7This Bank does not have a manager.");
-		this.config.addDefault("Mybank.Manager.Clear", "&8[!]&7Manager cleared/removed");
+		this.config.addDefault("Mybank.Manager.NoManager", "&7This Bank does not have a manager.");
+		this.config.addDefault("Mybank.Manager.Clear", "&7Manager cleared/removed");
 		this.config.addDefault("Mybank.Manager.Added", "&7Manager &5%player% &7was assigned to your Bank");
 		this.config.addDefault("Mybank.Manager.List", "&5%player% &7is the manager of your Bank");
 		this.config.addDefault("Mybank.Manager.CanDo", "&eA manager &2CAN&e:&7 \n - App/Del requests \n - Read transactions,log and reports \n - Deposit money");
 		this.config.addDefault("Mybank.Manager.CanNotDo", "&eA manager &cCANNOT&e:&7 \n - Disband the Bank \n - Pardon loans \n - Have/request loans in the Bank \n - Withdraw money");
 		
-		this.config.addDefault("Mybank.Manager.YouAreNowManager", "&7%time% - &2You have been assigned as a manager for bank %bank%.");
+		this.config.addDefault("Mybank.Manager.YouAreNowManager", "&7%time% - &2You have been assigned as a manager for bank &3%bank%.");
 		
 		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 You do not have a loan with that ID");
 		this.config.addDefault("Loans.Downpayment", "&7You have down paid &3%money% &7on your loan(&9%id%&7)");
-		this.config.addDefault("Loans.Del.IsActive", "&cYou cannot delete active contracts."); 
+		this.config.addDefault("Loans.Del.IsActive", "&8[!]&cYou cannot delete active contracts."); 
 		
-		this.config.addDefault("msg.null", "&7 There is no messages to display");
-		this.config.addDefault("msg.trans.notrans", "&7 There is no transactions to display.");
+		this.config.addDefault("msg.null", "&7There is no messages to display");
+		this.config.addDefault("msg.trans.notrans", "&7There is no transactions to display.");
 		this.config.addDefault("msg.trans.head", "&f Latest transactions (newest on top)");
 		this.config.addDefault("msg.msg.head", "&eMSG for %player%");
 

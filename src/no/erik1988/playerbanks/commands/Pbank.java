@@ -316,6 +316,7 @@ implements CommandExecutor
 
 					return false;
 				}
+				//TODO: add a feature to allow the borrower to increase the loan (if approved). 
 				//pbank b BANK AMOUNT
 				if(args[0].equalsIgnoreCase("borrow") || args[0].equalsIgnoreCase("b")){
 					if (args.length == 3) {
@@ -597,7 +598,8 @@ implements CommandExecutor
 							}
 							arg2 = Integer.parseInt(args[2]);
 						}
-
+						
+						
 						List<PageObject> loglist = plugin.sql.GetTransBank(p, bankid);
 						if(loglist.isEmpty()){
 							p.sendMessage(this.plugin.getMessager().get("transactions.null"));
@@ -610,6 +612,7 @@ implements CommandExecutor
 								return entry.getmsg();
 							}
 						}.display(p, loglist, arg2);
+						
 						return true;
 					}
 					int arg1 = 1;
@@ -625,6 +628,7 @@ implements CommandExecutor
 						p.sendMessage(this.plugin.getMessager().get("transactions.null"));
 						return false;
 					}
+					plugin.sql.MarkTransAsSeen(p);
 					new PaginatedResult<PageObject>("Transactions for " + p.getDisplayName() + "",""){
 
 						@Override
@@ -681,6 +685,7 @@ implements CommandExecutor
 
 				//pbank manager BANK [add|clear] [PLAYER]
 				if(args[0].equalsIgnoreCase("manager") || args[0].equalsIgnoreCase("man")){
+					String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
 					if (args.length >= 2) {
 						String BankName = args[1].toLowerCase(); 
 						if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
@@ -696,6 +701,11 @@ implements CommandExecutor
 								//remove manager
 								plugin.sql.ClearManager(BankName);
 								p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Clear"));
+								
+								String log = plugin.getMessager().get("log.ClearManager").replace("%owner%", p.getName().toString()).replace("%time%", timestamp);
+								int bankid = plugin.sql.GetBankID(BankName);
+								plugin.sql.AddLog(bankid, log);
+								
 								return true;
 							}
 
@@ -722,19 +732,22 @@ implements CommandExecutor
 										p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.PlayerHasLoan"));
 										return false;
 									}
-
+									
 									String mname = managerplayer.getName();
 									plugin.sql.AddManager(managerplayer,BankName);
 									p.sendMessage(this.plugin.getMessager().get("Mybank.Manager.Added").replace("%player%", mname));
 									UUID manageruuid = managerplayer.getUniqueId();
 									//sends notification to manger 
 
-									String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
+									
 									String msg = plugin.getMessager().get("Mybank.Manager.YouAreNowManager").replace("%bank%", BankName).replace("%time%", timestamp);
 
 									plugin.sql.AddMSG(managerplayer, msg, manageruuid);
 									plugin.ShowMsgIfOnline(manageruuid);
 
+									String log = plugin.getMessager().get("log.NewManager").replace("%owner%", p.getName().toString()).replace("%time%", timestamp).replace("%player%", mname);
+									int bankid = plugin.sql.GetBankID(BankName);
+									plugin.sql.AddLog(bankid, log);
 
 									return true;
 								}
@@ -945,7 +958,7 @@ implements CommandExecutor
 
 					}.display(p, loglist, arg1);
 
-					return true;
+					return true; 
 				}
 				if(args[0].equalsIgnoreCase("loans") || args[0].equalsIgnoreCase("requests")){
 					if (args.length == 3){
