@@ -23,6 +23,7 @@ public class Main extends JavaPlugin {
 	private FileConfiguration config = getConfig();
 	private MessageHandler m;
 	public SQLite sql;
+	public Actions actions;
 	private LoanObject loanobject;
 	private Economy economy;
 
@@ -31,6 +32,7 @@ public class Main extends JavaPlugin {
 		this.m = new MessageHandler(this);
 		this.sql = new SQLite(this);
 		this.loanobject = new LoanObject(this);
+		this.actions = new Actions(this);
 		Pbank pbank = new Pbank(this);
 		getCommand("pbank").setExecutor(pbank);
 		config.addDefault("interest.autocharge.enable", Boolean.valueOf(true));
@@ -107,6 +109,7 @@ public class Main extends JavaPlugin {
 		this.m = null;
 		this.sql = null;
 		this.loanobject = null;
+		this.actions = null;
 
 	}
 	public MessageHandler getMessager() 
