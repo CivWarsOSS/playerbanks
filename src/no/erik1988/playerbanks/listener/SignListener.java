@@ -33,16 +33,18 @@ public void onSignChange(SignChangeEvent event){
 	//line 1: bankname
 	//line 2:
 	//line 3: amount
-	if((event.getLine(0).equalsIgnoreCase("[borrow]")) || (event.getLine(0).equalsIgnoreCase(c.getString("sign.allias.borrow", "[loan]")))){
+	if((event.getLine(0).equalsIgnoreCase(c.getString("sign.allias.borrow", "[borrow]")))){
 		
 		Player player = event.getPlayer();
 		//check if bankname was entered. 
 		if (event.getLine(1).isEmpty()) {
-			 
+			//TODO: replace msg.
+			player.sendMessage("You need to type the name of your bank");
+            event.setCancelled(true);
+            return;
 		 }
 		String BankName = event.getLine(1);
 		if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
-			//TODO: replace msg.
 			player.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
             event.setCancelled(true);
             return;
@@ -94,7 +96,7 @@ public void onSignInteract(PlayerInteractEvent event) {
         	//line 1: bankname
         	//line 2:
         	//line 3: amount
-            if ((sign.getLine(0).equalsIgnoreCase("[borrow]")) || (sign.getLine(0).equalsIgnoreCase(c.getString("sign.allias.borrow", "[loan]")))) {
+            if ((sign.getLine(0).equalsIgnoreCase(c.getString("sign.allias.borrow", "[borrow]")))) {
             	
             	Player p = event.getPlayer();
                 String[] delimit = sign.getLine(3).split(" ");
@@ -111,6 +113,22 @@ public void onSignInteract(PlayerInteractEvent event) {
 					//p.sendMessage("tryborrow return false");
 					return;
 				}
+            }
+            if ((sign.getLine(0).equalsIgnoreCase(c.getString("sign.allias.pay", "[PayLoan]")))) {
+            	
+            	Player p = event.getPlayer();
+                String[] delimit = sign.getLine(3).split(" ");
+                int amount = Integer.valueOf(Integer.valueOf(delimit[0].trim()).intValue());
+                
+                String BankName = ChatColor.stripColor(sign.getLine(1));
+        		if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
+        			p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
+        			return;
+        		}
+                int BankID = plugin.sql.GetBankID(BankName);
+                int LoanId = plugin.sql.GetLoanId(BankID,p);
+                plugin.actions.TryPay(p, amount, LoanId);
+
             }
         }
 	}

@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import net.milkbowl.vault.economy.Economy;
+
 //this class process actions from signs and cmd.
 public class Actions {
 	private Main plugin;
@@ -138,4 +140,63 @@ public class Actions {
 		}
 		return true;
 }
+	public boolean TryPay(Player p, int amount, int loanid) {
+		//check if loan exsist AND if the player is the borrower. 
+		if (!plugin.sql.CheckIfLoanExsistCodeBorrower(p, loanid)) {
+			p.sendMessage(this.plugin.getMessager().get("Loans.Pay.NoloanWithId"));
+
+			return false;
+		}
+		//p.sendMessage("Checking if enougth money..");
+		if (!checkMoney(p, amount)) {
+			return false;
+		}
+		//check how much is left of loan.
+		int paymentsleft = plugin.sql.CheckMoneyLeftLoan(loanid);
+		if (paymentsleft < amount) {
+			amount = paymentsleft;
+		}
+		int bankid = plugin.sql.GetBankIDFromLoan(loanid);
+		//plugin.st.DownpayThreaded(code,amount2);
+		plugin.sql.Downpay(loanid,amount);
+		Economy e = plugin.getEconomy();
+		e.withdrawPlayer(p.getPlayer(), amount);
+		//plugin.st.DepositThreaded(p, bankid, amount2);
+		plugin.sql.Deposit(p, bankid, amount);
+		//Integer BankID = plugin.sql.GetBankID(BankName);
+		//plugin.sql.Deposit(p, BankID, amount2);
+		//0.deposit
+		//1.withdraw
+		//2.borrow/loan
+		//3.payment(manual)
+		//4.interest
+		//5.Autopayment
+		int logtype = 3; 
+		UUID uuid = p.getUniqueId();
+		//plugin.st.MakeLogThreaded(logtype, code, amount2, p, bankid,1,uuid);
+		plugin.LogTransPre(logtype, loanid, amount, p, bankid,1,uuid);
+
+		p.sendMessage(plugin.getMessager().get("Loans.Downpayment").replace("%money%", Integer.toString(amount)).replace("%id%", Integer.toString(loanid)));
+
+		//plugin.st.CheckifLoanIsPayedThreaded(code);
+		plugin.CheckifLoanIsPayed(loanid);
+		return true;
+		
+	}
+	private boolean checkMoney(Player p, double amount)
+	{
+		double money;
+		Economy e = plugin.getEconomy();
+		if (!e.hasAccount(p.getPlayer())) {
+			plugin.getMessager().sendMessage("eco.AccNotExisting", p);
+			return false;
+		}
+		money = e.getBalance(p.getPlayer());
+		if (money < amount) {
+			String moneyAsString = Double.toString(money);
+			p.sendMessage(plugin.getMessager().get("eco.NotEnougthMoney").replace("%money%", moneyAsString));
+			return false; 
+		}
+		return true;
+	}
 }

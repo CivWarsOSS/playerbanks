@@ -1901,6 +1901,34 @@ abstract class Database {
 		}
 		return BankID;             
 	}
+	public Integer GetLoanId(int BankId, OfflinePlayer player) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null; 
+		Integer LoanId = 0;
+		String uuid = player.getUniqueId().toString();
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT id FROM " + loans + " WHERE bankid = '"+BankId+"' AND borrower = '"+uuid+"' AND active = 1;");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+			LoanId = rs.getInt("id"); 
+			}
+		
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+			}
+		}
+		return LoanId;             
+	}
 	//manager related
 	public void AddManager(OfflinePlayer manager, String bankname) {
 		Connection conn = null;

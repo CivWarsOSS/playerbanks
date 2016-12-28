@@ -357,48 +357,13 @@ implements CommandExecutor
 							p.sendMessage(this.plugin.getMessager().get("cmd.pay"));
 							return false;
 						}
-						int code = Integer.parseInt(args[1]); 
-						//check if loan exsist AND if the player is the borrower. 
-						if (!plugin.sql.CheckIfLoanExsistCodeBorrower(p, code)) {
-							p.sendMessage(this.plugin.getMessager().get("Loans.Pay.NoloanWithId"));
-
+						int loanid = Integer.parseInt(args[1]); 
+						int amount = Integer.parseInt(args[2]);
+						if(plugin.actions.TryPay(p, amount, loanid)){
+							return true;	
+						} else {
 							return false;
 						}
-						//p.sendMessage("Checking if enougth money..");
-						int amount2 = Integer.parseInt(args[2]);
-						if (!checkMoney(p, amount2)) {
-							return false;
-						}
-						//check how much is left of loan.
-						int paymentsleft = plugin.sql.CheckMoneyLeftLoan(code);
-						if (paymentsleft < amount2) {
-							amount2 = paymentsleft;
-						}
-						int bankid = plugin.sql.GetBankIDFromLoan(code);
-						//plugin.st.DownpayThreaded(code,amount2);
-						plugin.sql.Downpay(code,amount2);
-						Economy e = plugin.getEconomy();
-						e.withdrawPlayer(p.getPlayer(), amount2);
-						//plugin.st.DepositThreaded(p, bankid, amount2);
-						plugin.sql.Deposit(p, bankid, amount2);
-						//Integer BankID = plugin.sql.GetBankID(BankName);
-						//plugin.sql.Deposit(p, BankID, amount2);
-						//0.deposit
-						//1.withdraw
-						//2.borrow/loan
-						//3.payment(manual)
-						//4.interest
-						//5.Autopayment
-						int logtype = 3; 
-						UUID uuid = p.getUniqueId();
-						//plugin.st.MakeLogThreaded(logtype, code, amount2, p, bankid,1,uuid);
-						plugin.LogTransPre(logtype, code, amount2, p, bankid,1,uuid);
-
-						p.sendMessage(plugin.getMessager().get("Loans.Downpayment").replace("%money%", Integer.toString(amount2)).replace("%id%", Integer.toString(code)));
-
-						//plugin.st.CheckifLoanIsPayedThreaded(code);
-						plugin.CheckifLoanIsPayed(code);
-						return true;
 					}
 					p.sendMessage(this.plugin.getMessager().get("desc.Pay"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.pay")); 
