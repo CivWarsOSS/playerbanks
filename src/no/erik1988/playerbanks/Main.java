@@ -18,6 +18,7 @@ import no.erik1988.playerbanks.sql.SQLite;
 import no.erik1988.playerbanks.commands.Pbank;
 import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
+import no.erik1988.playerbanks.listener.SignListener;
 
 public class Main extends JavaPlugin {
 	private FileConfiguration config = getConfig();
@@ -68,6 +69,9 @@ public class Main extends JavaPlugin {
 		config.addDefault("loan.maxBorrow.unlimited.perm.maxcontracts", "pbank.unlimited.maxcontract");
 		config.addDefault("loan.maxfee", Integer.valueOf(20));
 		config.addDefault("other.notifyOnLogin", Boolean.valueOf(true)); 
+		config.addDefault("sign.active", Boolean.valueOf(true));
+		config.addDefault("sign.allias.borrow", "[Borrow]");
+		config.addDefault("sign.allias.pay", "[PayLoan]");
 		config.options().copyDefaults(true);
 
 		saveConfig(); 
@@ -78,10 +82,18 @@ public class Main extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		//starts login listener
 		boolean onlogin = config.getBoolean("other.notifyOnLogin",true);
 		if(onlogin){
 			getServer().getPluginManager().registerEvents(new LoginListener(this), this);
 		}
+		//starts sign listener
+		boolean onsign = config.getBoolean("sign.active",true);
+		if(onsign){
+			getServer().getPluginManager().registerEvents(new SignListener(this), this);
+		}
+		
+		
 		sql.load();
 		int timeofday = config.getInt("interest.timeofday.hour",4);
 		int timeofdaycleanup = config.getInt("cleanup.timeofday.hour",5);
