@@ -9,4 +9,4 @@ commands:
     description: Main command pbank. 
     permission: pbank.user
     permission-message: You don't have the pbank.user permission. 
-    aliases: [pbanks]
+    aliases: [pbanks, banks, bank]
