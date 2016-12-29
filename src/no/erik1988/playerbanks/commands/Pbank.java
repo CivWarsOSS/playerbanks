@@ -55,6 +55,10 @@ implements CommandExecutor
 						p.sendMessage(this.plugin.getMessager().get("cmd.RemBank"));
 						p.sendMessage(this.plugin.getMessager().get("cmd.managers"));
 						p.sendMessage(this.plugin.getMessager().get("cmd.log"));
+						boolean onsign = c.getBoolean("sign.active",true);
+						if(onsign){
+							p.sendMessage(this.plugin.getMessager().get("cmd.sign"));
+						}
 					}
 					p.sendMessage(this.plugin.getMessager().get("cmd.list"));
 					p.sendMessage(this.plugin.getMessager().get("cmd.info"));
@@ -986,7 +990,20 @@ implements CommandExecutor
 					}.display(p, loglist, arg1);
 					return true;
 				}
-
+				if(args[0].equalsIgnoreCase("sign")|| args[0].equalsIgnoreCase("signs")){
+					if (args.length == 2) {
+						if(args[1].equalsIgnoreCase("borrow")){
+							p.sendMessage(this.plugin.getMessager().get("sign.desc.borrow"));
+							return true;
+						}
+						if(args[1].equalsIgnoreCase("payloan")){
+							p.sendMessage(this.plugin.getMessager().get("sign.desc.payloan"));
+							return true;
+						}
+					}
+					p.sendMessage(this.plugin.getMessager().get("sign.desc.list"));
+					return true;
+				}
 
 				if(args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("i")){
 					if (args.length == 2) {

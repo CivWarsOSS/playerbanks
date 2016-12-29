@@ -31,15 +31,14 @@ public void onSignChange(SignChangeEvent event){
 	//if player creates a borrow sign
 	//line 0: [borrow]
 	//line 1: bankname
-	//line 2:
+	//line 2: fee: # | i: #
 	//line 3: amount
 	if((event.getLine(0).equalsIgnoreCase(c.getString("sign.allias.borrow", "[borrow]")))){
 		
 		Player player = event.getPlayer();
 		//check if bankname was entered. 
 		if (event.getLine(1).isEmpty()) {
-			//TODO: replace msg.
-			player.sendMessage("You need to type the name of your bank");
+			player.sendMessage(this.plugin.getMessager().get("sign.NameOfBank"));
             event.setCancelled(true);
             return;
 		 }
@@ -62,23 +61,98 @@ public void onSignChange(SignChangeEvent event){
 				Integer.parseInt(event.getLine(3));
 			}
 			catch (NumberFormatException e) {
-				// Invalid input on second line, it has to be a NUMBER!
-				//TODO: replace msg.
-				player.sendMessage("The amount you entered is not a valid number!");
+				player.sendMessage(this.plugin.getMessager().get("sign.NotANumber"));
 				event.setCancelled(true);
 				return;
 			}
 		}
-		//check if player is owner or manager of Bank.
+		//gather information about bank.
+		String[] info = plugin.sql.GetBankInfo(BankName);
+		//String owner = info[0];
+		int interestrate = Integer.parseInt(info[1]);
+		//int inviteonly = Integer.parseInt(info[2]);
+		//int value = Integer.parseInt(info[3]);
+		//double receivables = Integer.parseInt(info[4]);
+		//int bankid = Integer.parseInt(info[8]);
+		//int receivables = plugin.sql.GetRecivables(bankid);
+		//int maxloan = Integer.parseInt(info[5]);
+		//UUID owneruuid = UUID.fromString(info[6]);
+		int fee = Integer.parseInt(info[7]);
+		String nameofbank = info[10];
+		//String receivablesasstirng = Integer.toString(receivables);
+		String interestrateAsString = "0%";
+		if(interestrate == 1){
+			interestrateAsString = c.getString("interest.low")+ "%";
+		}
+		else if(interestrate == 2){
+			interestrateAsString = c.getString("interest.med")+ "%";
+		}
+		else if(interestrate == 3){
+			interestrateAsString = c.getString("interest.high")+ "%";
+		}
+		String manager = info[9];
+		if(manager == null){
+			manager = "-";
+		}
         
         //creating the sign:
     	event.setLine(0, c.getString("sign.allias.borrow", "[borrow]"));
-        event.setLine(1, ChatColor.DARK_BLUE + BankName);
-        event.setLine(2, player.getName());
-        event.setLine(3, amountastring);
-        //TODO:Change msg.
-        player.sendMessage("Sign created.");
+        event.setLine(1, ChatColor.DARK_BLUE + nameofbank);
+        //event.setLine(2, player.getName());
+        //event.setLine(2, ChatColor.BOLD +"fee:"+Integer.toString(fee)+" | i:"+interestrateAsString);
+        event.setLine(2, ChatColor.BOLD + this.plugin.getMessager().get("sign.feeandinterest").replace("%fee%", Integer.toString(fee)).replace("%interest%", interestrateAsString));
+        
+        event.setLine(3, amountastring); 
+        player.sendMessage(this.plugin.getMessager().get("sign.created"));
 	}
+	//if player creates a payloan sign
+		//line 0: [payloan]
+		//line 1: bankname
+		//line 2:
+		//line 3: amount
+		if((event.getLine(0).equalsIgnoreCase(c.getString("sign.allias.payloan", "[payloan]")))){
+			
+			Player player = event.getPlayer();
+			//check if bankname was entered. 
+			if (event.getLine(1).isEmpty()) {
+				player.sendMessage(this.plugin.getMessager().get("sign.NameOfBank"));
+	            event.setCancelled(true);
+	            return;
+			 }
+			String BankName = event.getLine(1);
+			if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
+				player.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
+	            event.setCancelled(true);
+	            return;
+			}
+			if (!plugin.sql.CheckIfOwner(player, BankName) && !plugin.sql.CheckIfManager(player, BankName)) {
+				player.sendMessage(this.plugin.getMessager().get("cmd.YouCannotManage"));
+	            event.setCancelled(true);
+	            return;
+			}
+			//check if amount was entered.
+			String amountastring = c.getString("loan.minBorrow.value","50");
+			if (!event.getLine(3).isEmpty()) {
+				amountastring = event.getLine(3);
+				try {
+					Integer.parseInt(event.getLine(3));
+				}
+				catch (NumberFormatException e) {
+					player.sendMessage(this.plugin.getMessager().get("sign.NotANumber"));
+					event.setCancelled(true);
+					return;
+				}
+			}
+			String[] info = plugin.sql.GetBankInfo(BankName);
+			String nameofbank = info[10];
+			
+	        //creating the sign:
+	    	event.setLine(0, c.getString("sign.allias.payloan", "[PayLoan]"));
+	        event.setLine(1, ChatColor.DARK_BLUE + nameofbank);
+	        //event.setLine(2, player.getName());
+	        event.setLine(3, amountastring);
+	        player.sendMessage(this.plugin.getMessager().get("sign.created"));
+		}
 	
 }
 @EventHandler 	// Player interacts with a block.
@@ -91,6 +165,8 @@ public void onSignInteract(PlayerInteractEvent event) {
         if ((type == Material.SIGN_POST) || (type == Material.WALL_SIGN)) {
         	
         	Sign sign = (Sign)event.getClickedBlock().getState();
+        	
+        	
         	//check if its a borrow sign
         	//line 0: [borrow]
         	//line 1: bankname
@@ -114,6 +190,12 @@ public void onSignInteract(PlayerInteractEvent event) {
 					return;
 				}
             }
+            
+        	//check if its a payloan sign
+        	//line 0: [PayLoan]
+        	//line 1: bankname
+        	//line 2:
+        	//line 3: amount
             if ((sign.getLine(0).equalsIgnoreCase(c.getString("sign.allias.pay", "[PayLoan]")))) {
             	
             	Player p = event.getPlayer();

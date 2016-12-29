@@ -139,6 +139,7 @@ public class MessageHandler {
 		this.config.addDefault("cmd.reports", "&7 Use &3/pbank reports&7|rep [[read] [id]] [page]");
 		this.config.addDefault("cmd.managers", "&7 Use &3/pbank manager BANK &7[add|clear] [PLAYER]"); 
 		this.config.addDefault("cmd.log", "&7 Use &3/pbank log BANK &7[page]");
+		this.config.addDefault("cmd.sign", "&7 Use &b/pbank sign &7[type]");
 		
 		this.config.addDefault("cmd.info", "&7 Use &b/pbank info&7|i &3BANK");
 		this.config.addDefault("cmd.list", "&7 Use &b/pbank list&7|l &b");
@@ -147,6 +148,8 @@ public class MessageHandler {
 		this.config.addDefault("cmd.pay", "&7 Use &b/pbank pay&7|p &bLOANID AMOUNT&7");
 		this.config.addDefault("cmd.transactions", "&7 Use &b/pbank trans&7 [bank] [page]");
 		this.config.addDefault("cmd.msg", "&7 Use &b/pbank msg");
+		
+		
 
 		
 		
@@ -264,7 +267,14 @@ public class MessageHandler {
 		this.config.addDefault("msg.trans.notrans", "&7There is no transactions to display.");
 		this.config.addDefault("msg.trans.head", "&f Latest transactions (newest on top)");
 		this.config.addDefault("msg.msg.head", "&eMSG for %player%");
-
+		
+		this.config.addDefault("sign.NotANumber", "&8[!]&c Line 4 needs to be a number.");
+		this.config.addDefault("sign.NameOfBank", "&8[!]&c Line 2 needs to be the name of your bank.");
+		this.config.addDefault("sign.desc.borrow", "##############\n#   [Borrow]   \n#     BANK     \n#              \n#    AMOUNT    \n##############\n&8 You can make a sign like this to allow players to request a loan from you by clicking the sign.");
+		this.config.addDefault("sign.desc.payloan", "##############\n#   [PayLoan]  \n#     BANK     \n#              \n#    AMOUNT    \n##############\n&8 You can make a sign like this to allow players to pay down on their loan by clicking the sign.");
+		this.config.addDefault("sign.desc.list", "&eType this to see sign instructions:\n&8 - &3/pbank sign Borrow \n&8 - &3/pbank sign PayLoan");
+		this.config.addDefault("sign.created", "&8Sign created.");
+		this.config.addDefault("sign.feeandinterest", "fee:%fee% | i:%interest%");
 		
 		
 		this.config.options().copyDefaults(true);
