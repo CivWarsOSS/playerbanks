@@ -139,7 +139,7 @@ public class MessageHandler {
 		this.config.addDefault("cmd.reports", "&7 Use &3/pbank reports&7|rep [[read] [id]] [page]");
 		this.config.addDefault("cmd.managers", "&7 Use &3/pbank manager BANK &7[add|clear] [PLAYER]"); 
 		this.config.addDefault("cmd.log", "&7 Use &3/pbank log BANK &7[page]");
-		this.config.addDefault("cmd.sign", "&7 Use &b/pbank sign &7[type]");
+		this.config.addDefault("cmd.sign", "&7 Use &3/pbank sign &7[type]");
 		
 		this.config.addDefault("cmd.info", "&7 Use &b/pbank info&7|i &3BANK");
 		this.config.addDefault("cmd.list", "&7 Use &b/pbank list&7|l &b");
