@@ -345,25 +345,38 @@ implements CommandExecutor
 					p.sendMessage(this.plugin.getMessager().get("cmd.borrow"));
 					return false;
 				}
-				//pbank pay LOANID AMOUNT
+				//pbank pay LOANID|BANK AMOUNT
+				//TODO: add the ability to use bank name instead of loanid.
 				if(args[0].equalsIgnoreCase("pay")|| args[0].equalsIgnoreCase("p")){
 					if (args.length == 3) {
-						if (!isInt(args[1]) || !isInt(args[2])) {
+						if (!isInt(args[2])) {
 							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 							p.sendMessage(this.plugin.getMessager().get("cmd.pay"));
 							p.sendMessage(this.plugin.getMessager().get("eg.LoanId"));
 							return false;
 						}
-						int arg2 = Integer.parseInt(args[2]);
-						int arg1 = Integer.parseInt(args[1]);
-						if(arg2 <= 0 || arg1 <= 0){
+						int LoanId = 0;
+						if (isInt(args[1])){
+							LoanId = Integer.parseInt(args[1]);
+						}
+						else
+						{
+							String BankName = args[1];
+			        		if (!plugin.sql.CheckIfBankNameExsist(BankName)) {
+			        			p.sendMessage(this.plugin.getMessager().get("cmd.BankDoesNotExsist"));
+			        			return false;
+			        		}
+			                int BankID = plugin.sql.GetBankID(BankName);
+			                LoanId = plugin.sql.GetLoanId(BankID,p);
+						}
+						int amount = Integer.parseInt(args[2]);
+						//int arg1 = Integer.parseInt(args[1]);
+						if(amount <= 0 || LoanId <= 0){
 							p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
 							p.sendMessage(this.plugin.getMessager().get("cmd.pay"));
 							return false;
 						}
-						int loanid = Integer.parseInt(args[1]); 
-						int amount = Integer.parseInt(args[2]);
-						if(plugin.actions.TryPay(p, amount, loanid)){
+						if(plugin.actions.TryPay(p, amount, LoanId)){
 							return true;	
 						} else {
 							return false;

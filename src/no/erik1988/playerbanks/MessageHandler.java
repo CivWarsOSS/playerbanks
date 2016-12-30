@@ -145,7 +145,7 @@ public class MessageHandler {
 		this.config.addDefault("cmd.list", "&7 Use &b/pbank list&7|l &b");
 		this.config.addDefault("cmd.borrow", "&7 Use &b/pbank borrow&7|b &bBANK AMOUNT");
 		this.config.addDefault("cmd.loans", "&7 Use &b/pbank loans&7 [del] [id]");
-		this.config.addDefault("cmd.pay", "&7 Use &b/pbank pay&7|p &bLOANID AMOUNT&7");
+		this.config.addDefault("cmd.pay", "&7 Use &b/pbank pay&7|p &bLOANID|BANK AMOUNT&7");
 		this.config.addDefault("cmd.transactions", "&7 Use &b/pbank trans&7 [bank] [page]");
 		this.config.addDefault("cmd.msg", "&7 Use &b/pbank msg");
 		
@@ -259,7 +259,7 @@ public class MessageHandler {
 		
 		this.config.addDefault("Mybank.Manager.YouAreNowManager", "&7%time% - &2You have been assigned as a manager for bank &3%bank%.");
 		
-		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 You do not have a loan with that ID");
+		this.config.addDefault("Loans.Pay.NoloanWithId", "&7 Cannot find loan, make sure the ID/name is correct.");
 		this.config.addDefault("Loans.Downpayment", "&7You have down paid &3%money% &7on your loan(&9%id%&7)");
 		this.config.addDefault("Loans.Del.IsActive", "&8[!]&cYou cannot delete active contracts."); 
 		
