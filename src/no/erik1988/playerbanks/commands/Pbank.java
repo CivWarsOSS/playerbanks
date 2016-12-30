@@ -346,7 +346,6 @@ implements CommandExecutor
 					return false;
 				}
 				//pbank pay LOANID|BANK AMOUNT
-				//TODO: add the ability to use bank name instead of loanid.
 				if(args[0].equalsIgnoreCase("pay")|| args[0].equalsIgnoreCase("p")){
 					if (args.length == 3) {
 						if (!isInt(args[2])) {
