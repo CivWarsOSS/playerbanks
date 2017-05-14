@@ -34,13 +34,13 @@ public class MessageHandler {
 	}
 
 	public void reloadConfig() {
-		this.config = YamlConfiguration.loadConfiguration(this.file);
-		InputStream defConfigStream = this.plugin.getResource("messages.yml");
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-			this.config.setDefaults(defConfig);
-		}
-	}
+	    this.config = YamlConfiguration.loadConfiguration(this.file);
+	    //InputStream defConfigStream = this.plugin.getResource("messages.yml");
+	    if (this.file != null) {
+		      YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(this.file);
+		      this.config.setDefaults(defConfig);
+		    }
+	  }
 
 	public void saveConfig() {
 		try {
