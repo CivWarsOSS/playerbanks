@@ -75,11 +75,18 @@ public class LoanObject {
 	            //5.Autopayment
 	            int logtype = 5;  
 	            //plugin.st.MakeLogThreaded(logtype, loanid, autocharge, player, bankid, 0,uuid);
-	            plugin.LogTransPre(logtype, loanid, autocharge, player, bankid, 0,uuid);
-	            LogHandler.info("loan id: " + loanid +" downpayed with: "+ autocharge +" from: "+ player.getName().toString());
-	            //plugin.st.CheckifLoanIsPayedThreaded(loanid);
-	            plugin.CheckifLoanIsPayed(loanid);
-	            //plugin.ShowTransIfOnline(uuid);
+
+	            if (autocharge > 0){
+		            plugin.LogTransPre(logtype, loanid, autocharge, player, bankid, 0,uuid);
+		            LogHandler.info("loan id: " + loanid +" downpayed with: "+ autocharge +" from: "+ player.getName().toString());
+		            //plugin.st.CheckifLoanIsPayedThreaded(loanid);
+		            plugin.CheckifLoanIsPayed(loanid);
+		            //plugin.ShowTransIfOnline(uuid);
+	            } else {
+	            	LogHandler.info(player.getName().toString() + " did not have enough money to pay down loan (loan Id: " + loanid);
+	            }
+	            
+
 			}
 		} catch (SQLException e1) {
 			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), e1);
