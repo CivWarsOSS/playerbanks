@@ -1157,6 +1157,33 @@ abstract class Database {
 		}
 		return;             
 	}
+	public void MarkLoanAsMissed(int loanid, int type) {
+		//TODO: 
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getSQLConnection();
+			if (type == 1){
+	ps = conn.prepareStatement("UPDATE " + loans + " SET missedpaymentsrow = missedpaymentsrow + 1 WHERE id = '"+ loanid + "'");
+			} else{
+	ps = conn.prepareStatement("UPDATE " + loans + " SET missedpaymentsrow = 0 WHERE id = '"+ loanid + "'");
+			}
+				
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+			}
+		}
+		return;             
+	}
 	public List<LoanObject> GetLoanObject() throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1168,6 +1195,44 @@ abstract class Database {
 			conn = getSQLConnection();
 
 			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE active = 1");
+			rs = ps.executeQuery();
+			while(rs.next()){
+				lo = new LoanObject(plugin);
+				lo.setbankid(rs.getInt("bankid"));
+				lo.setloanid(rs.getInt("id"));
+				lo.setborrower(rs.getString("borrower"));
+				lo.setinterest(rs.getInt("interest"));
+				lo.setborrowed(rs.getInt("borrowed"));
+				lo.setpayments(rs.getInt("payments"));
+				lo.setfee(rs.getInt("fee"));
+				lo.setinterestrate(rs.getInt("interestrate"));
+				out.add(lo);
+			}   
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+			}
+		}
+		return out;            
+	}
+	public List<LoanObject> GetLoanObjectPlayer(OfflinePlayer player) throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<LoanObject> out = new ArrayList<>();
+		LoanObject lo = null;
+		String uuid = player.getUniqueId().toString();
+		try {
+			conn = getSQLConnection();
+
+			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE active = 1 AND borrower = "+uuid+"");
 			rs = ps.executeQuery();
 			while(rs.next()){
 				lo = new LoanObject(plugin);

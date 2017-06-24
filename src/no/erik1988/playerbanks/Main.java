@@ -236,7 +236,7 @@ public class Main extends JavaPlugin {
 		}
 
 	}
-	private void ShowTransIfOnline(UUID UUID){
+	public void ShowTransIfOnline(UUID UUID){
 		OfflinePlayer player = Bukkit.getOfflinePlayer(UUID);
 		if (player.isOnline()){
 			Player player2 = Bukkit.getPlayer(UUID);

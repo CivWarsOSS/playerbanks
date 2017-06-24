@@ -180,6 +180,7 @@ public class Actions {
 
 		//plugin.st.CheckifLoanIsPayedThreaded(code);
 		plugin.CheckifLoanIsPayed(loanid);
+		plugin.sql.MarkLoanAsMissed(loanid,2);
 		return true;
 		
 	}

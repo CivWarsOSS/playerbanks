@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -18,6 +20,7 @@ public class SQLite extends Database{
         super(instance);
         dbname = "pbank"; // Set the table name here e.g player_kills
     }
+    
 
     private String SQLiteCreateBanksTable = "CREATE TABLE IF NOT EXISTS pbank_banks (" + // make sure to put your table name in here too.
     		"`id` INTEGER," +
@@ -46,6 +49,7 @@ public class SQLite extends Database{
             "`activateddate` INTEGER DEFAULT 0," +
             "`downpayeddate` INTEGER DEFAULT 0," +
             "`approvedby` varchar(36)," +
+            "`missedpaymentsrow` INTEGER DEFAULT 0," +
             "PRIMARY KEY (`id`)" +  
             ");";
     private String SQLiteCreatePaymentsTable = "CREATE TABLE IF NOT EXISTS pbank_transactions (" + 
@@ -74,6 +78,12 @@ public class SQLite extends Database{
     		"`timestamp` INTEGER NOT NULL," +
             "PRIMARY KEY (`id`)" +  
             ");";
+    
+    //These strings are used to update the tables to the latest version.
+    private String LoanTable = "SELECT * FROM pbank_loans limit 1;";
+    private String MissedPayUpdate = "ALTER TABLE pbank_loans ADD COLUMN missedpaymentsrow INTEGER DEFAULT 0;";
+
+    
     // SQL creation stuff, You can leave the blow stuff untouched.
     public Connection getSQLConnection() {
         File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
@@ -109,10 +119,26 @@ public class SQLite extends Database{
             s.executeUpdate(SQLiteCreateMSGTable);
             s.executeUpdate(SQLiteCreateLogTable);
             s.executeUpdate("PRAGMA journal_mode=WAL");
+          //do we need to update the database to the new version?
+            ResultSet rs = s.executeQuery(LoanTable);
+			if(!hasColumn(rs, "missedpaymentsrow")){
+				s.executeUpdate(MissedPayUpdate);
+            }
             s.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         initialize();
     }
+    public static boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columns = rsmd.getColumnCount();
+        for (int x = 1; x <= columns; x++) {
+            if (columnName.equals(rsmd.getColumnName(x))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
