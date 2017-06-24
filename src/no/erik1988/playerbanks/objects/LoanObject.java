@@ -82,7 +82,9 @@ public class LoanObject {
 		            //plugin.st.CheckifLoanIsPayedThreaded(loanid);
 		            plugin.CheckifLoanIsPayed(loanid);
 		            //plugin.ShowTransIfOnline(uuid);
-		            plugin.sql.MarkLoanAsMissed(loanid,2);
+		            if (autocharge >= c.getInt("interest.autocharge.FixedAmount")){
+			            plugin.sql.MarkLoanAsMissed(loanid,2);
+		            }
 	            } else {
 	            	LogHandler.info(player.getName().toString() + " did not have enough money to pay down loan (loan Id: " + loanid);
 	            	plugin.sql.MarkLoanAsMissed(loanid,1);

@@ -11,7 +11,7 @@ import net.milkbowl.vault.economy.Economy;
 //this class process actions from signs and cmd.
 public class Actions {
 	private Main plugin;
-
+	FileConfiguration c = plugin.getConfig();
 	public Actions(Main plugin)
 	{
 		this.plugin = plugin;
@@ -141,6 +141,7 @@ public class Actions {
 		return true;
 }
 	public boolean TryPay(Player p, int amount, int loanid) {
+		
 		//check if loan exsist AND if the player is the borrower. 
 		if (!plugin.sql.CheckIfLoanExsistCodeBorrower(p, loanid)) {
 			p.sendMessage(this.plugin.getMessager().get("Loans.Pay.NoloanWithId"));
@@ -180,7 +181,9 @@ public class Actions {
 
 		//plugin.st.CheckifLoanIsPayedThreaded(code);
 		plugin.CheckifLoanIsPayed(loanid);
-		plugin.sql.MarkLoanAsMissed(loanid,2);
+        if (amount >= c.getInt("interest.autocharge.FixedAmount")){
+            plugin.sql.MarkLoanAsMissed(loanid,2);
+        }
 		return true;
 		
 	}
