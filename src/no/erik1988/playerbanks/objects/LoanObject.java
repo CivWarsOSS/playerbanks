@@ -88,7 +88,6 @@ public class LoanObject {
 	            } else {
 	            	LogHandler.info(player.getName().toString() + " did not have enough money to pay down loan (loan Id: " + loanid);
 	            	plugin.sql.MarkLoanAsMissed(loanid,1);
-	            	//TODO: add a missed payment counter.
 	            }
 	            
 
