@@ -24,6 +24,7 @@ public class LoanObject {
 	private int interest;
 	private int borrowed;
 	private int payments;
+	private int interestrate;
 	
 	public LoanObject(Main plugin) {
 		this.plugin = plugin;
@@ -55,14 +56,17 @@ public class LoanObject {
 				
 				UUID uuid = UUID.fromString(borrower); 
 				OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-				double curmoney = e.getBalance(player);
+				double curmoneyd = e.getBalance(player);
+				int curmoney1 = (int) curmoneyd;
+				Integer curmoney = Integer.valueOf(curmoney1);
 				int paymentsleft = (interest + borrowed + fee) - payments;
 				if (paymentsleft < autocharge){
 					autocharge = paymentsleft;
 	        	}
+				
 	        	if (curmoney < autocharge){
 	        		
-	        		autocharge = (int) curmoney;
+	        		autocharge = curmoney;
 	        	}
 	        	plugin.sql.Downpay(loanid,autocharge);
 	    		e.withdrawPlayer(player, autocharge);
@@ -86,7 +90,8 @@ public class LoanObject {
 			            plugin.sql.MarkLoanAsMissed(loanid,2);
 		            }
 	            } else {
-	            	LogHandler.info(player.getName().toString() + " did not have enough money to pay down loan (loan Id: " + loanid);
+	            	LogHandler.info(player.getName().toString() + " did not have enough money to pay down loan (loan Id: " + loanid + ")");
+	            	//LogHandler.info(player.getName().toString() + " curmoney: " + curmoney + "paymentsleft: " + paymentsleft + "interest: " + interest + "borrowed: " + borrowed+ "payments: " + payments+ "fee: " + fee);
 	            	plugin.sql.MarkLoanAsMissed(loanid,1);
 	            }
 	            
@@ -122,14 +127,16 @@ public class LoanObject {
 					
 					
 					UUID uuid = UUID.fromString(borrower); 
-					double curmoney = e.getBalance(player);
+					double curmoneyd = e.getBalance(player);
+					int curmoney1 = (int) curmoneyd;
+					Integer curmoney = Integer.valueOf(curmoney1);
 					int paymentsleft = (interest + borrowed + fee) - payments;
 					if (paymentsleft < autocharge){
 						autocharge = paymentsleft;
 		        	}
 		        	if (curmoney < autocharge){
 		        		
-		        		autocharge = (int) curmoney;
+		        		autocharge = curmoney;
 		        	}
 		        	plugin.sql.Downpay(loanid,autocharge);
 		    		e.withdrawPlayer(player, autocharge);
@@ -251,7 +258,7 @@ public class LoanObject {
 		
 	}
 	public void setinterestrate(int interestrate) {
-		this.fee = interestrate;
+		this.interestrate = interestrate;
 		
 	}
 	
@@ -285,7 +292,7 @@ public class LoanObject {
 		
 	}
 	private int getinterestrate() {
-		return fee;
+		return interestrate;
 		
 	}
 }
