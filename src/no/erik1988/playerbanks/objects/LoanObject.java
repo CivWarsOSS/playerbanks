@@ -25,6 +25,7 @@ public class LoanObject {
 	private int borrowed;
 	private int payments;
 	private int interestrate;
+	private int active;
 	
 	public LoanObject(Main plugin) {
 		this.plugin = plugin;
@@ -186,8 +187,13 @@ public class LoanObject {
 				int interest = loanobject.getinterest();
 				int borrowed = loanobject.getborrowed();
 				int payments = loanobject.getpayments();
+				int active = loanobject.getactive();
 				String borrower = loanobject.getborrower();
 				
+				if (active == 4){
+					LogHandler.info("Loan id "+ loanid +" is frozen");
+					return;
+				}
 				
 				UUID uuid = UUID.fromString(borrower); 
 				OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
@@ -261,6 +267,10 @@ public class LoanObject {
 		this.interestrate = interestrate;
 		
 	}
+	public void setactive(int interestrate) {
+		this.active = interestrate;
+		
+	}
 	
 //get variables:
 	private int getbankid() {
@@ -293,6 +303,10 @@ public class LoanObject {
 	}
 	private int getinterestrate() {
 		return interestrate;
+		
+	}
+	private int getactive() {
+		return active;
 		
 	}
 }

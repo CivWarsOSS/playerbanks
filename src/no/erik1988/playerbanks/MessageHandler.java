@@ -100,6 +100,7 @@ public class MessageHandler {
 		
 		this.config.addDefault("Status.Pending", "&ePending");
 		this.config.addDefault("Status.Active", "&2Active");
+		this.config.addDefault("Status.Frozen", "&3Frozen");
 		
 		this.config.addDefault("Banks.Bank.Header", "&eBANK &6VALUE &eOWNER &6FEE &eINTEREST");
 		this.config.addDefault("Banks.Bank.List", "&7 &9%bank% &7 &2%value% &7 &5%owner% &7 %fee% &7 %interest%");

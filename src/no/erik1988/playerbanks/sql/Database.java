@@ -1134,6 +1134,30 @@ abstract class Database {
 		}
 		return;            
 	}
+	public void MarkContractFrozen(Player player, int code) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		//long timestamp = System.currentTimeMillis();
+		//String uuid = player.getUniqueId().toString();
+		try {
+			conn = getSQLConnection();
+
+			ps = conn.prepareStatement("UPDATE " + loans + " SET active = 4 WHERE id = '"+ code + "'");
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+			}
+		}
+		return;            
+	}
 	public void MarkContractPayed(int code) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1158,7 +1182,6 @@ abstract class Database {
 		return;             
 	}
 	public void MarkLoanAsMissed(int loanid, int type) {
-		//TODO: 
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -1194,7 +1217,7 @@ abstract class Database {
 		try {
 			conn = getSQLConnection();
 
-			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE active = 1");
+			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE active = 1 OR active = 4");
 			rs = ps.executeQuery();
 			while(rs.next()){
 				lo = new LoanObject(plugin);
@@ -1206,6 +1229,7 @@ abstract class Database {
 				lo.setpayments(rs.getInt("payments"));
 				lo.setfee(rs.getInt("fee"));
 				lo.setinterestrate(rs.getInt("interestrate"));
+				lo.setactive(rs.getInt("active"));
 				out.add(lo);
 			}   
 		} catch (SQLException ex) {
@@ -1232,7 +1256,7 @@ abstract class Database {
 		try {
 			conn = getSQLConnection();
 
-			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE active = 1 AND borrower = "+uuid+"");
+			ps = conn.prepareStatement("SELECT * FROM "+loans+" WHERE (active = 1 OR active = 4) AND borrower = "+uuid+"");
 			rs = ps.executeQuery();
 			while(rs.next()){
 				lo = new LoanObject(plugin);
@@ -1394,7 +1418,7 @@ abstract class Database {
 			ps = conn.prepareStatement("SELECT loans.borrower " +
 					"FROM pbank_loans as loans " + 
 					"WHERE loans.bankid = '" + bankid + "' " +
-					"AND loans.active IS NOT 3 OR 0;");
+					"AND loans.active IS NOT 3 OR loans.active IS NOT 0;");
 			rs = ps.executeQuery();
 			if(rs.next()){
 				exsist = true;
@@ -1535,7 +1559,7 @@ abstract class Database {
 			ps = conn.prepareStatement("SELECT loans.id, loans.borrower " +
 					"FROM pbank_loans as loans " +
 					"WHERE loans.id = '" + code + "' " +
-					"AND loans.borrower = '" + myuuid + "' AND loans.active IS NOT 3;");
+					"AND loans.borrower = '" + myuuid + "' AND loans.active IS NOT 3");
 			rs = ps.executeQuery();
 			if(rs.next()){
 				exsist = true;
@@ -1567,7 +1591,7 @@ abstract class Database {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT loans.id, loans.borrower " +
 					"FROM pbank_loans as loans " + 
-					"WHERE loans.id = '" + code + "' AND loans.active = 1 ");
+					"WHERE loans.id = '" + code + "' AND loans.active = 1 OR loans.active = 4 ");
 			rs = ps.executeQuery();
 			if(rs.next()){
 				exsist = true;
@@ -1974,7 +1998,7 @@ abstract class Database {
 		String uuid = player.getUniqueId().toString();
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT id FROM " + loans + " WHERE bankid = '"+BankId+"' AND borrower = '"+uuid+"' AND active = 1;");
+			ps = conn.prepareStatement("SELECT id FROM " + loans + " WHERE bankid = '"+BankId+"' AND borrower = '"+uuid+"' AND active = 1 OR active = 4;");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 			LoanId = rs.getInt("id"); 

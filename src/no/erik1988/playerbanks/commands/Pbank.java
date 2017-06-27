@@ -669,7 +669,7 @@ implements CommandExecutor
 								OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
 
 
-								if(active == 1){
+								if(active == 1 || active == 4){
 									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.AlreadyActive"));
 									return false;
 								}
