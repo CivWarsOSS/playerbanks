@@ -1472,7 +1472,7 @@ abstract class Database {
 					ps.close();
 				if (conn != null)
 					conn.close();
-			} catch (SQLException ex) {
+			} catch (SQLException ex) { 
 				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
 			}
 		}
