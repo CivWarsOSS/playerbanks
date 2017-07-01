@@ -400,7 +400,9 @@ abstract class Database {
 				String status2 = c.getString("Status.Pending","§ePending");
 				if (status == 1){
 					status2 = c.getString("Status.Active","§2Active");
-					amount = amount + fee;
+					//amount = amount + fee;
+				} else if (status == 4){
+					status2 = c.getString("Status.Frozen","§3Frozen");
 				}
 				String interest = "0%";
 				if(interestrate == 1){
@@ -1134,7 +1136,7 @@ abstract class Database {
 		}
 		return;            
 	}
-	public void MarkContractFrozen(Player player, int code) {
+	public void MarkContractStatus(int code, int status) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		//long timestamp = System.currentTimeMillis();
@@ -1142,7 +1144,7 @@ abstract class Database {
 		try {
 			conn = getSQLConnection();
 
-			ps = conn.prepareStatement("UPDATE " + loans + " SET active = 4 WHERE id = '"+ code + "'");
+			ps = conn.prepareStatement("UPDATE " + loans + " SET active = '"+status+"' WHERE id = '"+ code + "'");
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);

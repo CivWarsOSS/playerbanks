@@ -136,7 +136,7 @@ public class MessageHandler {
 		this.config.addDefault("cmd.me", "&7 Use &3/pbank me");
 		this.config.addDefault("cmd.deposit", "&7 Use &3/pbank deposit&7|d &3BANK AMOUNT");
 		this.config.addDefault("cmd.withdraw", "&7 Use &3/pbank withdraw&7|w &3BANK AMOUNT");
-		this.config.addDefault("cmd.contracts", "&7 Use &3/pbank contracts&7|c [app|del] [id]");
+		this.config.addDefault("cmd.contracts", "&7 Use &3/pbank contracts&7|c [app|del|freeze] [id]");
 		this.config.addDefault("cmd.reports", "&7 Use &3/pbank reports&7|rep [[read] [id]] [page]");
 		this.config.addDefault("cmd.managers", "&7 Use &3/pbank manager BANK &7[add|clear] [PLAYER]"); 
 		this.config.addDefault("cmd.log", "&7 Use &3/pbank log BANK &7[page]");
@@ -180,6 +180,8 @@ public class MessageHandler {
 		
 		this.config.addDefault("borrow.Approved", "&7%time% - &5%player% &2has approved your loan of &3%money%.");
 		this.config.addDefault("borrow.Denied", "&7%time% - &5%player% &chas denied your loan of &3%money%.");
+		this.config.addDefault("borrow.Frozen", "&7%time% - &5%player% &ahas frozen your loan of &3%money%. &7(no more interest will be added)");
+		this.config.addDefault("borrow.unFrozen", "&7%time% - &5%player% &chas unfrozen your loan of &3%money%. &7(interest will be added again)");
 		this.config.addDefault("borrow.Pardoned", "&7%time% - &5%player% &ahas pardoned your loan of &3%money%.");
 		this.config.addDefault("borrow.Finished", "&7%time% - &2Loan of &3%amount% &7(+ &3%interest% &7interest and &3%fee% &7fee) \n &2from &3%bank% &2has been payed down.");
 		
@@ -189,6 +191,8 @@ public class MessageHandler {
 		this.config.addDefault("log.Request", "&7%time% - &5%player% &7has requested to borrow &3%money%.");
 		this.config.addDefault("log.Approved", "&7%time% - &5%player% &2has approved &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Denied", "&7%time% - &5%player% &chas denied &5%borrower%s request for &3%money%.");
+		this.config.addDefault("log.Frozen", "&7%time% - &5%player% &ahas frozen &5%borrower%s loan of &3%money%.");
+		this.config.addDefault("log.unFrozen", "&7%time% - &5%player% &chas unfrozen &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Pardoned", "&7%time% - &5%player% &ahas pardoned &5%borrower%s loan of &3%money%.");
 		this.config.addDefault("log.Finished", "&7%time% - &2Loan of &3%amount% &2from &5%borrower%& &2has been payed down.");
 		this.config.addDefault("log.null", "&7There is no log to display.");
@@ -224,6 +228,9 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Contracts.Null", "&7You do not have any contracts.");
 		this.config.addDefault("Mybank.Contracts.DelIsActive", "&cThe contract you are trying to delete is active. \n &c If you delete this contact the borrower will be pardoned (you dont get your money). \n &c If you want to proceed you can type &3/pbank c del %id% -f");
 		this.config.addDefault("Mybank.Contracts.DelSuccess", "&2You deleted contract &3%id%");
+		this.config.addDefault("Mybank.Contracts.FrozenIsNotActive", "&cThe contract you are trying to freeze is not active &3%id%");
+		this.config.addDefault("Mybank.Contracts.FrozenSuccess", "&2You froze contract &3%id%");
+		this.config.addDefault("Mybank.Contracts.unFrozenSuccess", "&2You unfroze contract &3%id%");
 		this.config.addDefault("Mybank.Contracts.Finished", "&2%time% - &5%borrower%'s &7loan of &3%amount% &7(+ &3%interest% &7interest and + &3%fee% &7fee) \n &7was payed down (&3%bank%&7).");
 		
 		this.config.addDefault("Mybank.Contracts.Pending", "&7You have &3%count% &7pending contract(s). &3/pbank c"); 

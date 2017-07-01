@@ -644,7 +644,7 @@ implements CommandExecutor
 					plugin.cleanUp();
 					return true;
 				}
-				//pbank c [app|del] [id]
+				//pbank c [app|del|freeze] [id]
 				if(args[0].equalsIgnoreCase("contracts") || args[0].equalsIgnoreCase("c")){
 					if (args.length >= 2 ) {
 						if(args[1].equalsIgnoreCase("approve") || args[1].equalsIgnoreCase("app")){
@@ -780,6 +780,58 @@ implements CommandExecutor
 								LogHandler.info("loanid: "+ code + " was deleted by "+ p.getName().toString() + " (bankmanager)");
 								p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.DelSuccess").replace("%id%", Integer.toString(code)));
 								return true;
+							}
+
+						}
+						if(args[1].equalsIgnoreCase("freeze")){
+							if (args.length >= 3) {
+								if (!isInt(args[2])) {
+									p.sendMessage(this.plugin.getMessager().get("cmd.Wrong"));
+									p.sendMessage(this.plugin.getMessager().get("eg.LoanId"));
+									return false;
+								}
+								int code = Integer.parseInt(args[2]);
+								if(!plugin.sql.CheckIfLoanExsistCodeOwner(p,code)){
+									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.CantfindContract"));
+									return false;
+								}
+
+								if(!plugin.sql.CheckIfLoanIsActive(code)){
+									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.FrozenIsNotActive").replace("%id%", Integer.toString(code)));
+									return false;
+								}
+
+								String[] info = plugin.sql.GetLoanInfo(code);
+								int borrowed = Integer.parseInt(info[3]);
+								UUID borroweruuid = UUID.fromString(info[8]);
+								int bankid = Integer.parseInt(info[11]);
+								int active = Integer.parseInt(info[5]);
+								OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
+
+								String timestamp = new SimpleDateFormat("dd.MM.yy").format(System.currentTimeMillis());
+								String log = "N/A";
+								String msg = "N/A";
+if (active == 4){
+	log = plugin.getMessager().get("log.unFrozen").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+	msg = plugin.getMessager().get("borrow.unFrozen").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+	plugin.sql.MarkContractStatus(code,1);
+	
+	LogHandler.info("loanid: "+ code + " was unfrozen by "+ p.getName().toString() + " (bankmanager)");
+	p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.unFrozenSuccess").replace("%id%", Integer.toString(code)));
+} else {
+	msg = plugin.getMessager().get("borrow.Frozen").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+	log = plugin.getMessager().get("log.Frozen").replace("%money%", Integer.toString(borrowed)).replace("%player%", p.getName().toString()).replace("%borrower%", borrowerplayer.getName().toString()).replace("%time%", timestamp);
+
+	plugin.sql.MarkContractStatus(code,4);
+	LogHandler.info("loanid: "+ code + " was frozen by "+ p.getName().toString() + " (bankmanager)");
+	p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.FrozenSuccess").replace("%id%", Integer.toString(code)));
+
+}
+plugin.sql.AddMSG(borrowerplayer, msg,borroweruuid);
+plugin.sql.AddLog(bankid, log);
+plugin.ShowMsgIfOnline(borroweruuid);
+return true;
+
 							}
 
 						}
