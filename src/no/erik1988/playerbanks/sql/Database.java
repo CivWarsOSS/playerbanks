@@ -400,9 +400,10 @@ abstract class Database {
 				String status2 = c.getString("Status.Pending","§ePending");
 				if (status == 1){
 					status2 = c.getString("Status.Active","§2Active");
-					//amount = amount + fee;
+					amount = amount + fee;
 				} else if (status == 4){
 					status2 = c.getString("Status.Frozen","§3Frozen");
+					amount = amount + fee;
 				}
 				String interest = "0%";
 				if(interestrate == 1){
@@ -1493,12 +1494,17 @@ abstract class Database {
 					"AND loans.active IS NOT 3 ;");
 			ps.setInt(1, code);
 			rs = ps.executeQuery();
-			rs.next();
-			String owneruuid = rs.getString("owner");
-			String manuuid = rs.getString("manager");
-			if (myuuid.equalsIgnoreCase(owneruuid) || myuuid.equalsIgnoreCase(manuuid)){
-				exsist = true;
+			if (rs.next()){
+				String owneruuid = rs.getString("owner");
+				String manuuid = rs.getString("manager");
+				if (myuuid.equalsIgnoreCase(owneruuid) || myuuid.equalsIgnoreCase(manuuid)){
+					exsist = true;
+				}
+			} else {
+				exsist = false;
 			}
+			
+
 
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);

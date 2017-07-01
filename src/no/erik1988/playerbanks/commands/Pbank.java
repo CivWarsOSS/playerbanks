@@ -846,7 +846,57 @@ return true;
 									p.sendMessage(this.plugin.getMessager().get("Mybank.Contracts.CantfindContract"));
 									return false;
 								}
-								//info about contract.
+								//TODO:info about contract.
+								String[] info = plugin.sql.GetLoanInfo(code);
+								String borrower = info[0];
+								int interestrate = Integer.parseInt(info[1]);
+								int interest = Integer.parseInt(info[2]);
+								int borrowed = Integer.parseInt(info[3]);
+								int payments = Integer.parseInt(info[4]);
+								int active = Integer.parseInt(info[5]);
+								long requestdate = Long.parseLong(info[6]);
+								int fee = Integer.parseInt(info[9]);
+								long activateddate = Long.parseLong(info[10]);
+								//UUID borroweruuid = UUID.fromString(info[8]);
+								UUID appuuid = UUID.fromString(info[15]);
+								String nameofbank = info[12];
+								//int bankid = Integer.parseInt(info[11]);
+								
+								String manager = Bukkit.getOfflinePlayer(appuuid).getName();
+								//OfflinePlayer borrowerplayer = Bukkit.getOfflinePlayer(borroweruuid);
+								
+								String status = c.getString("Status.Pending","§ePending");
+								if (active == 1){
+									status = c.getString("Status.Active","§2Active");
+								} else if (active == 4){
+									status = c.getString("Status.Frozen","§3Frozen");
+								}
+								
+								
+								String interestrateAsString = "0%";
+								if(interestrate == 1){
+									interestrateAsString = c.getString("interest.low")+ "%";
+								}
+								else if(interestrate == 2){
+									interestrateAsString = c.getString("interest.med")+ "%";
+								}
+								else if(interestrate == 3){
+									interestrateAsString = c.getString("interest.high")+ "%";
+								}
+								int profit = payments - borrowed;
+
+								String requestdateFormat = new SimpleDateFormat("dd.MM.yy").format(requestdate);
+								String activateddateFormat = new SimpleDateFormat("dd.MM.yy").format(activateddate);
+								p.sendMessage(plugin.getMessager().get("Main.Divider"));
+								p.sendMessage(plugin.getMessager().get("Mybank.Info.Head").replace("%loanid%", Integer.toString(code)).replace("%borrower%", borrower));
+								p.sendMessage(plugin.getMessager().get("Mybank.Info.Status").replace("%status%", status));
+								p.sendMessage(plugin.getMessager().get("Mybank.Report.line1").replace("%bank%", nameofbank).replace("%interestrate%", interestrateAsString));
+								p.sendMessage(plugin.getMessager().get("Mybank.Report.line2").replace("%borrowed%", Integer.toString(borrowed)).replace("%interest%", Integer.toString(interest)).replace("%fee%", Integer.toString(fee)));
+								p.sendMessage(plugin.getMessager().get("Mybank.Report.line3").replace("%payment%", Integer.toString(payments)).replace("%profit%", Integer.toString(profit)));
+								p.sendMessage(plugin.getMessager().get("Mybank.Report.line4").replace("%requested%", requestdateFormat));
+								p.sendMessage(plugin.getMessager().get("Mybank.Report.line5").replace("%approved%", activateddateFormat).replace("%manager%", manager));
+								p.sendMessage(plugin.getMessager().get("Main.Divider"));
+								
 								return true;
 							}
 						}

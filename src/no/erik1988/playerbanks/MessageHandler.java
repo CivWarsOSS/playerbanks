@@ -136,7 +136,7 @@ public class MessageHandler {
 		this.config.addDefault("cmd.me", "&7 Use &3/pbank me");
 		this.config.addDefault("cmd.deposit", "&7 Use &3/pbank deposit&7|d &3BANK AMOUNT");
 		this.config.addDefault("cmd.withdraw", "&7 Use &3/pbank withdraw&7|w &3BANK AMOUNT");
-		this.config.addDefault("cmd.contracts", "&7 Use &3/pbank contracts&7|c [app|del|freeze] [id]");
+		this.config.addDefault("cmd.contracts", "&7 Use &3/pbank contracts&7|c [app|del|freeze|info] [id]");
 		this.config.addDefault("cmd.reports", "&7 Use &3/pbank reports&7|rep [[read] [id]] [page]");
 		this.config.addDefault("cmd.managers", "&7 Use &3/pbank manager BANK &7[add|clear] [PLAYER]"); 
 		this.config.addDefault("cmd.log", "&7 Use &3/pbank log BANK &7[page]");
@@ -239,6 +239,9 @@ public class MessageHandler {
 		this.config.addDefault("Mybank.Remove.NotEmpty", "&cYour bank still has money in it, withdraw it before removing the account.&3/pbank w BANK AMOUNT");
 		this.config.addDefault("Mybank.Remove.HasActiveLoans", "&cYour bank still has active contracts, delete them before removing the bank.");
 		this.config.addDefault("Mybank.Remove.RemSuccess", "&2You removed bank &3%bank%");
+		
+		this.config.addDefault("Mybank.Info.Head", "&2##INFO FOR LOANID: &3%loanid% &2- &5%borrower%&2##");
+		this.config.addDefault("Mybank.Info.Status", "&7Status: %status%");
 		
 		this.config.addDefault("Mybank.Report.Head", "&2##REPORT FOR LOANID: &3%loanid% &2- &5%borrower%&2##");
 		this.config.addDefault("Mybank.Report.line1", "&7Bank: &9%bank% &7InterestRate: &3%interestrate%");
