@@ -16,6 +16,7 @@ import no.erik1988.playerbanks.Schedule;
 import no.erik1988.playerbanks.MessageHandler;
 import no.erik1988.playerbanks.sql.SQLite;
 import no.erik1988.playerbanks.commands.Pbank;
+import no.erik1988.playerbanks.commands.Support;
 import no.erik1988.playerbanks.objects.LoanObject;
 import no.erik1988.playerbanks.listener.LoginListener;
 import no.erik1988.playerbanks.listener.SignListener;
@@ -24,6 +25,7 @@ public class Main extends JavaPlugin {
 	private FileConfiguration config = getConfig();
 	private MessageHandler m;
 	public SQLite sql;
+	public Support support;
 	public Actions actions;
 	private LoanObject loanobject;
 	private Economy economy;
@@ -32,6 +34,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		this.m = new MessageHandler(this);
 		this.sql = new SQLite(this);
+		this.support = new Support(this);
 		this.loanobject = new LoanObject(this);
 		this.actions = new Actions(this);
 		Pbank pbank = new Pbank(this);

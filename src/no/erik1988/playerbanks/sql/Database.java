@@ -2026,6 +2026,43 @@ abstract class Database {
 		}
 		return LoanId;             
 	}
+	public List<Integer> GetAllContracts(int bankId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Integer> ll = null;
+		try {
+			conn = getSQLConnection();
+
+
+			ps = conn.prepareStatement("Select loans.id AS id " +
+					"From pbank_banks AS banks " +
+					"LEFT JOIN pbank_loans AS loans " +
+					"ON banks.id = loans.bankid " +
+					"where (banks.id = ?) AND loans.borrower IS NOT NULL AND loans.active IS NOT 3 " + 
+					"ORDER BY loans.requestdate DESC");
+			ps.setInt(1, bankId);  
+			rs = ps.executeQuery();
+			while(rs.next()){
+				int loanId = rs.getInt("id");
+
+				ll = new ArrayList<Integer>();
+				ll.add(loanId);
+			}
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+			}
+		}
+		return ll;             
+	}
 	//manager related
 	public void AddManager(OfflinePlayer manager, String bankname) {
 		Connection conn = null;
