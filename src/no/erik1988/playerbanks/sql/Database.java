@@ -1589,7 +1589,7 @@ abstract class Database {
 		}
 		return exsist;             
 	}
-
+//TODO: check for error
 	public boolean CheckIfLoanIsActive(int code) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1599,9 +1599,9 @@ abstract class Database {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT loans.id, loans.borrower " +
 					"FROM pbank_loans as loans " + 
-					"WHERE loans.id = '" + code + "' AND loans.active = 1 OR loans.active = 4 ");
+					"WHERE loans.id = '" + code + "' AND (loans.active = 1 OR loans.active = 4) ");
 			rs = ps.executeQuery();
-			if(rs.next()){
+			if(rs.next()){ 
 				exsist = true;
 			}else{
 				exsist = false;

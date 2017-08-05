@@ -681,6 +681,8 @@ implements CommandExecutor
 						p.sendMessage(plugin.getMessager().get("Mybank.Remove.RemSuccess").replace("%bank%", BankName));
 						return true;
 				}
+					p.sendMessage("pbank Disband will permanetly delete the bank, the loans in that bank and remove the money from it.");
+					p.sendMessage("Use /pbank disband [Bank].");
 					return false;
 				}
 				
