@@ -192,7 +192,7 @@ public class LoanObject {
 				
 				if (active == 4){
 					LogHandler.info("Loan id "+ loanid +" is frozen");
-					return;
+					continue;
 				}
 				
 				UUID uuid = UUID.fromString(borrower); 
